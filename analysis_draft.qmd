@@ -1,0 +1,337 @@
+---
+title: "Analysis draft"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(haven)
+library(readxl)
+library(here)
+library(wordbankr)
+library(gamlss)
+source("centiles_pred_fix.R")
+```
+
+# Load data
+## SWIPE SAV file
+```{r}
+df_data <- read_sav(here("data", "SWIPE_HETSL_2025-01-31.sav"))
+
+name_p <- c("prononce et comprend", "Dice e capisce", "Understands and says")
+name_u <- c("comprend", "Capisce", "Understands")
+
+# df_vars <- tibble(
+#   column = colnames(df_data),
+#   var_label = map(df_data, \(x) (attr(x,"label") |> as.character())[1]) |> list_c()
+# ) |> write_csv("columns.csv")
+df_vars <- read_csv(here("data", "columns.csv")) |> 
+  mutate(measure = ifelse(item_type == "word", 
+                          ifelse(map(var_label, \(l) any(str_detect(l, name_p))), 
+                                 "produces",
+                                 ifelse(map(var_label, \(l) any(str_detect(l, name_u))), 
+                                        "understands", 
+                                        "produces")),
+                          NA))
+
+df_long <- df_data |> select(ID, age = ageChild, starts_with("HETSL")) |>
+  mutate(across(starts_with("HETSL"), as.character)) |>
+  pivot_longer(cols = starts_with("HETSL"), names_to = "item", values_to = "value") |> 
+  left_join(df_vars, by = join_by(item == column)) |>
+  separate_wider_delim(col = "item", delim = "_",
+                       names = c("HETSL", "form", "category", "item_num"),
+                       too_few = "align_start", too_many = "merge") |> 
+  filter(item_type == "word") |> 
+  mutate(produces = ifelse(measure == "produces", value, NA),
+         understands = ifelse(form %in% c("E.8", "F.8", "I.8"), value, NA))
+
+df_sum <- df_long |>
+  group_by(ID, age, form) |>
+  summarise(produces = sum(produces == 1, na.rm = TRUE),
+            understands = sum(understands == 1, na.rm = TRUE),
+            .groups = "drop") |> 
+  mutate(
+    language = str_replace_all(form, c(
+      "E.18" = "English",
+      "E.8" = "English",
+      "F.17" = "French",
+      "F.8" = "French",
+      "G.18" = "German",
+      "I.8" = "Italian",
+      "MCD.I.17" = "Italian"
+    )),
+    form = str_replace_all(form, c(
+      "E.18" = "WS",
+      "E.8" = "WG",
+      "F.17" = "WS",
+      "F.8" = "WG",
+      "G.18" = "WS",
+      "I.8" = "WG",
+      "MCD.I.17" = "WS"
+    )),
+  ) |> 
+  filter(produces > 0 | understands > 0)
+
+df_sum_wide <- df_sum |>
+  pivot_wider(id_cols = ID, names_from = c(language, form), values_from = produces)
+
+df_sum_sum <- df_sum |>
+  group_by(ID) |>
+  summarise(n_forms = sum(produces > 0 | understands > 0))
+```
+
+## Parental Screen Use Project XLSX file
+```{r}
+df_psu_wg <- read_xlsx(here("data", "PARENTAL SCREEN USE PROJECT.xlsx"), sheet = "MCDI 8-16m",
+                       range = "A1:TA20")
+df_psu_wg_long <- df_psu_wg |> 
+  pivot_longer(cols = -c(`Record ID`:`Sex`), names_to = "item", values_to = "value") |> 
+  mutate(item_type = ifelse(str_detect(item, "choice=") | 
+                              str_detect(item, "les trois phrases"), "morphosyntax", "word")) |> 
+  filter(item_type == "word",
+         !is.na(`Record ID`))
+
+df_psu_wg_sum <- df_psu_wg_long |> 
+  group_by(`Record ID`, `Age calculé`) |>
+  summarise(produces = sum(value == "compris et dit", na.rm = TRUE), 
+            understands = sum(value == "compris" | value == "compris et dit", na.rm = TRUE), 
+            .groups = "drop") |> 
+  mutate(language = "French", form = "WG") |> 
+  rename(ID = `Record ID`,
+         age = `Age calculé`)
+```
+
+```{r}
+df_psu_ws <- read_xlsx(here("data", "PARENTAL SCREEN USE PROJECT.xlsx"), sheet = "MCDI 16-30m")
+df_psu_ws_long <- df_psu_ws |> 
+  pivot_longer(cols = -c(`Record ID`:`Sex`), names_to = "item", values_to = "value") |> 
+  mutate(item_type = ifelse(str_detect(item, "choice=") | 
+                              str_detect(item, "les trois phrases"), "morphosyntax", "word")) |> 
+  filter(item_type == "word")
+
+df_psu_ws_sum <- df_psu_ws_long |> 
+  group_by(`Record ID`, `Age calculé`) |>
+  summarise(produces = sum(value == "compris et dit", na.rm = TRUE), 
+            understands = sum(value == "compris" | value == "compris et dit", na.rm = TRUE), 
+            .groups = "drop") |> 
+  mutate(language = "French", form = "WS") |> 
+  rename(ID = `Record ID`,
+         age = `Age calculé`)
+```
+
+## Limesurvey XLSX file
+```{r}
+df_ldb_wg <- read_xlsx(here("data", "Limesurvey données brutes Enquête utilisation écrans (TB 2021 Blanco Veloso et Ben Jelloun) projet 229212.xlsx"), sheet = "MCDI 8-16mos")
+
+df_ldb_wg_long <- df_ldb_wg |> 
+  pivot_longer(cols = -c(`ID de la réponse`:`Quelle âge a votre enfant ?`),
+               names_to = "item", values_to = "value") |> 
+  mutate(item_type = ifelse(str_detect(item, "#([6-9]|1[0-9]|2[0-4])"), "word", "gestures_etc"),
+         dob = as_datetime(`Indiquez la date de naissance de votre enfant`),
+         dob = ifelse(year(dob) < 2020, dob |> `year<-`(value = 2020), dob),
+         age = interval(dob,
+                        as_datetime(`Veuillez indiquer la date du jour : `)) %/% months(1)) |> 
+  filter(item_type == "word")
+
+LDB_WG_CORR = 412 / 421 # correcting for different numbers of items
+df_ldb_wg_sum <- df_ldb_wg_long |> 
+  group_by(`ID de la réponse`, age) |>
+  summarise(produces = sum(value == "D", na.rm = TRUE) * LDB_WG_CORR, 
+            understands = sum(value == "C" | value == "D", na.rm = TRUE) * LDB_WG_CORR, 
+            .groups = "drop") |> 
+  mutate(language = "French", form = "WG") |> 
+  rename(ID = `ID de la réponse`)
+```
+
+```{r}
+df_ldb_ws <- read_xlsx(here("data", "Limesurvey données brutes Enquête utilisation écrans (TB 2021 Blanco Veloso et Ben Jelloun) projet 229212.xlsx"), sheet = "MCDI 17-30 mos")
+
+df_ldb_ws_long <- df_ldb_ws |> 
+  pivot_longer(cols = -c(`ID de la réponse`:`Quelle âge a votre enfant ?`),
+               names_to = "item", values_to = "value") |> 
+  mutate(dob = as_datetime(`Indiquez la date de naissance de votre enfant`),
+         # dob = ifelse(year(dob) < 2016, dob |> `year<-`(value = 2019), dob),
+         age = interval(dob,
+                        as_datetime(`Veuillez indiquer la date du jour : `)) %/% months(1)) |> 
+  filter(dob >= ymd("2018-01-01"))
+# |> 
+  # mutate(item_type = ifelse(str_detect(item, "#([6-9]|1[0-9]|2[0-4])"), "word", "gestures_etc")) |> 
+  # filter(item_type == "word")
+
+df_ldb_ws_sum <- df_ldb_ws_long |> 
+  group_by(`ID de la réponse`, age) |>
+  summarise(produces = sum(value == "Oui", na.rm = TRUE), 
+            .groups = "drop") |> 
+  mutate(language = "French", form = "WS") |> 
+  rename(ID = `ID de la réponse`)
+```
+
+```{r}
+df_all_summaries <- bind_rows(
+  df_sum |> mutate(ID = as.numeric(ID)),
+  df_psu_wg_sum,
+  df_psu_ws_sum,
+  df_ldb_wg_sum,
+  df_ldb_ws_sum
+) |> 
+  filter(understands != 0 | 
+         !(is.na(understands) & produces == 0))
+
+df_all_sum_sum <- df_all_summaries |>
+  group_by(ID, age) |>
+  summarise(n_forms = sum(produces > 0 | understands > 0), .groups = "drop")
+```
+
+# Get norming data
+```{r}
+df_eng_ws <- get_administration_data("English (American)", "WS", include_language_exposure = TRUE)
+df_eng_wg <- get_administration_data("English (American)", "WG", include_language_exposure = TRUE)
+df_fra_ws <- get_administration_data("French (French)", "WS", include_language_exposure = TRUE)
+df_fra_wg <- get_administration_data("French (French)", "WG", include_language_exposure = TRUE)
+df_deu_ws <- get_administration_data("German", "WS", include_language_exposure = TRUE)
+df_ita_ws <- get_administration_data("Italian", "WS", include_language_exposure = TRUE)
+df_ita_wg <- get_administration_data("Italian", "WG", include_language_exposure = TRUE)
+```
+
+```{r}
+inst_num_items <- df_vars |> 
+  separate_wider_delim(col = "column", delim = "_",
+                       names = c("HETSL", "form", "category", "item_num"),
+                       too_few = "align_start", too_many = "merge") |> 
+  filter(item_type == "word",
+         measure == "produces") |> 
+  group_by(form) |> 
+  summarise(max = n()) |> 
+  mutate(
+    language = str_replace_all(form, c(
+      "E.18" = "English",
+      "E.8" = "English",
+      "F.17" = "French",
+      "F.8" = "French",
+      "G.18" = "German",
+      "I.8" = "Italian",
+      "MCD.I.17" = "Italian"
+    )),
+    form = str_replace_all(form, c(
+      "E.18" = "WS",
+      "E.8" = "WG",
+      "F.17" = "WS",
+      "F.8" = "WG",
+      "G.18" = "WS",
+      "I.8" = "WG",
+      "MCD.I.17" = "WS"
+    )),
+  )
+
+get_centiles <- function(wb_data, cache = TRUE, cache_dir = here("models"), use_cache = TRUE) {
+  lang <- wb_data$language[1] |> str_remove(" .*")
+  form <- wb_data$form[1]
+  
+  if (cache) {
+    if (!dir.exists(cache_dir)) {
+      dir.create(cache_dir)
+    }
+    cache_file <- file.path(cache_dir, paste0("centiles_", lang, "_", form, ".rds"))
+    if (file.exists(cache_file) && use_cache) {
+      return(readRDS(cache_file))
+    }
+  }
+  
+  has_long <- (wb_data$child_id |> duplicated() |> sum()) > 0
+  mod_data <<- wb_data |> 
+    filter(map_lgl(language_exposures, is.null)) |> 
+    mutate(language = str_remove(language, " .*")) |> 
+    left_join(inst_num_items, by = join_by(language, form)) |> 
+    mutate(prop_vocab = if (form == "WS") production / max else comprehension / max,
+           prop_vocab = case_when(
+             prop_vocab == 0 ~ 0.001,
+             prop_vocab == 1 ~ 0.999,
+             .default = prop_vocab
+           ),
+           child_id = as_factor(child_id)) |> 
+    filter(!is.na(prop_vocab)) |> 
+    select(age, prop_vocab, child_id)
+  
+  if (has_long) {
+    mod <- gamlss(prop_vocab ~ pbm(age, lambda = 1e5) +
+                    re(random = ~ 1 | child_id, level = 0),
+                  sigma.formula = ~ pbm(age, lambda = 1e5),
+                  family = BE(),
+                  data = mod_data,
+                  control = gamlss.control(n.cyc = 100))
+    cent <- centiles.pred(mod, type = "centiles",
+                          cent = 1:99,
+                          xname = "age", 
+                          xvalues = seq(min(mod_data$age), max(mod_data$age)),
+                          re = "child_id")
+  } else {
+    mod <- gamlss(prop_vocab ~ pbm(age, lambda = 1e5),
+                  sigma.formula = ~ pbm(age, lambda = 1e5),
+                  family = BE(),
+                  data = mod_data,
+                  control = gamlss.control(n.cyc = 100))
+    cent <- centiles.pred(mod, type = "centiles",
+                          cent = 1:99,
+                          xname = "age", 
+                          xvalues = seq(min(mod_data$age), max(mod_data$age)))
+  }
+  rm(mod_data, envir = .GlobalEnv)
+  
+  out <- tibble(
+    model = list(mod),
+    centiles = list(cent),
+    language = lang,
+    form = form
+  )
+  if (cache) {
+    saveRDS(out, cache_file)
+  }
+  out
+}
+```
+
+```{r}
+centiles_eng_ws <- get_centiles(df_eng_ws)
+centiles_eng_wg <- get_centiles(df_eng_wg)
+centiles_fra_ws <- get_centiles(df_fra_ws)
+centiles_fra_wg <- get_centiles(df_fra_wg)
+centiles_deu_ws <- get_centiles(df_deu_ws)
+centiles_ita_ws <- get_centiles(df_ita_ws)
+centiles_ita_wg <- get_centiles(df_ita_wg)
+```
+
+```{r}
+all_centiles <- bind_rows(
+  centiles_eng_ws,
+  centiles_eng_wg,
+  centiles_fra_ws,
+  centiles_fra_wg,
+  centiles_deu_ws,
+  centiles_ita_ws,
+  centiles_ita_wg
+) |> 
+  select(-model) |> 
+  unnest(centiles) |> 
+  rename(age = x) |> 
+  pivot_longer(cols = -c(age, language, form),
+               names_to = "centile", values_to = "prop_vocab") |> 
+  mutate(centile = as.numeric(centile))
+```
+
+# Merge norms with data
+```{r}
+df_all_centiles <- df_all_summaries |> 
+  left_join(inst_num_items, 
+            by = join_by(language, form)) |> 
+  mutate(prop_vocab_true = ifelse(form == "WS", produces / max, understands / max)) |> 
+  left_join(all_centiles, 
+            by = join_by(language, form, age),
+            relationship = "many-to-many") |> 
+  filter(!is.na(centile)) |> 
+  group_nest(ID, language, form, age, prop_vocab_true) |> 
+  mutate(centile = map2_dbl(prop_vocab_true, data, 
+                            \(x, y) y$centile[which.min(abs(y$prop_vocab - x))])) |> 
+  select(-data) |> 
+  rename(prop_vocab = prop_vocab_true)
+```
+
