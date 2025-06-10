@@ -1,0 +1,393 @@
+---
+title: "Analysis and Results"
+format: docx
+bibliography: "references.bib"
+csl: "apa.csl"
+---
+
+```{r echo=F}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+```{r}
+library(tidyverse)
+library(haven)
+library(here)
+library(glue)
+library(gt)
+library(lavaan)
+library(blavaan)
+library(coda)
+
+source("blavaan_helpers.R")
+source("ses_helpers.R")
+
+theme_set(theme_classic())
+```
+
+```{r}
+fround <- function(x, digits = 2) {
+  format(round(x, digits), nsmall = digits)
+}
+
+print_est_ci_df <- function(df, decimals = 2) {
+  print_est_ci(df$mean[1], df$ci.lower[1], df$ci.upper[1], decimals)
+}
+
+print_est_ci <- function(est, ci.lower, ci.upper, decimals = 2) {
+  glue("{fround(est, decimals)} [{fround(ci.lower, decimals)}, {fround(ci.upper, decimals)}]")
+}
+```
+
+# Method
+
+## Data analysis
+
+### Data preprocessing
+
+To prepare the data for analysis, we first conducted factor analysis on two groups of mediators of interest: parental motivations for screen use, and parent--child interactions during screen use. For both groups, we used parallel analysis [@hornRationaleTestNumber1965] to determine the number of factors to extract. We used the `psych` package [@revellePsychProceduresPsychological2025] to perform factor analysis on each group separately, using the factor scores as the mediators in our analysis. 
+
+We additionally converted the CDI vocabulary scores to percentiles. To do so, we obtained data for the relevant CDI instruments from Wordbank [@frankWordbankOpenRepository2017], accessed using the `wordbankr` package [@braginskyWordbankrAccessingWordbank2022]. We included all data from monolinguals, using expressive vocabulary scores for Words & Sentences forms (16--30 months) and receptive vocabulary scores for Words & Gestures forms (8--16 months); these scores were converted into proportions of the maximum score for each form. Following previous work [@frankVariabilityConsistencyEarly2021], we then fit the vocabulary proportions using generalised additive models for location, shape, and scale [GAMLSS\; @stasinopoulosFlexibleRegressionSmoothing2017] with a beta distribution, using the `gamlss` package [@stasinopoulosGamlssGeneralizedAdditive2024]. The models included monotonic P-splines for age for both location and scale, with a smoothing parameter of 10000. We also included random effects for child when there were longitudinal data. The fitted models were used to estimate vocabulary percentiles for each child, which we used as the outcome variable in our analysis.
+
+Age was mean-centred. Gender was treated as a binary variable with sum contrasts (male $= -0.5$, female $= 0.5$). Socioeconomic status (SES) was treated as an ordinal variable with polynomial contrasts. Whether children used screens while accompanied was treated as a binary variable.
+
+### Causal mediation analysis
+
+To test the validity of the DREAMER framework, we conducted a causal serial mediation analysis using the potential outcomes framework [@imaiGeneralApproachCausal2010; @valeriMediationAnalysisAllowing2013]. We used the `blavaan` package [@merkleBlavaanBayesianStructural2018] to fit a Bayesian structural equation model (SEM) to the data. The SEM was specified with five groups of variables: (1) child-level covariates (age, gender, SES); (2) structural factors (amount of childcare, number of older siblings); (3) first-level mediators (parental motivations for screen use); (4) second-level mediators (child screen use patterns---parent--child interactions, whether children used screens while accompanied, children's weekly screen time); and (5) outcome (vocabulary percentiles).
+
+In the first step of the model, the first-level mediators were predicted by the child-level covariates and structural factors. In the second step, the second-level mediators were predicted by the first-level mediators, child-level covariates, and structural factors. Finally, in the third step, the outcome was predicted by the second-level mediators, first-level mediators, child-level covariates, and structural factors, as well as interactions between the structural factors and all mediators, and between screen time and all other second-level mediators. A schematic path diagram of the model is shown in @fig-model-path; motivation and interaction variables are named using the results of the factor analyses described in the Results section.
+
+::: {#fig-model-path}
+![](figs/screenuse_sem.pdf)
+
+Schematic path diagram of the full SEM. Arrows connecting one group of variables to another indicate that all variables in the first group are used to predict all variables in the second group. Dashed lines indicate moderation effects. motiv: parental screen use motivations; inter: parent--child interactions during screen use.
+:::
+
+For both structural factors (amount of childcare and number of older siblings), we also calculated the pure natural direct effects (PNDEs), pure natural indirect effects (PNIEs), total natural direct effects (TNDEs), total natural indirect effects (TNIEs), and total effects (TEs). For amount of childcare, the effects were calculated for one additional halfday of childcare per week, and for number of older siblings, the effects were calculated for one additional older sibling. Reference values for the covariates were the mean age, the zero value for sum-contrasted gender, and the modal value for SES (corresponding to a bachelor's degree).
+
+We used weakly informative priors for all parameters: normal priors with mean 0 and standard deviation 10 for all coefficients and intercepts, LKJ priors with uniform density for all covariances, and gamma priors with alpha 1 and beta 0.5 for all variances. We used 4 chains of 10,000 iterations each, with the first 1000 iterations discarded as burn-in.
+
+# Results
+
+```{r}
+df_data <- read_sav(here("data", "SWIPE_HETSL_2025-01-10.sav"))
+
+df_data_vars <- tibble(
+  column = colnames(df_data),
+  var_label = map(df_data, \(x) (attr(x,"label") |> as.character())[1]) |> list_c()
+)
+```
+
+
+## Factor analyses
+
+```{r}
+#| label: tbl-fa-motivation
+#| tbl-cap: Factor analysis for parental screen use motivation items, showing a four-factor solution. Colours indicate loading scores, with red indicating negative loadings and blue indicating positive loadings.
+
+fa_motivation <- readRDS(here("models", "loadings_motivation.rds")) |> 
+  left_join(df_data_vars, by = join_by(item == column)) |> 
+  select(Item = var_label, `Behavioural management` = ML3,
+         `Freeing parent` = ML1, `Learning` = ML2, `Emotion regulation` = ML4) |> 
+  gt() |> 
+  fmt_number(decimals = 2) |> 
+  data_color(columns = -Item,
+             domain = c(-1, 1),
+             palette = "RdBu") |> 
+  tab_spanner(label = "Factor loadings",
+              columns = -Item) |> 
+  cols_width(
+    Item ~ px(250),
+    everything() ~ px(90)
+  ) |> 
+  tab_options(table.font.size = 11)
+
+fa_motivation
+```
+
+For parental motivations, parallel analysis suggested a four-factor solution. Factor loadings for each of the parental motivation items are shown in @tbl-fa-motivation. The first factor is related to child behavioural management, involving items relating to modifying the child's behaviour. The second factor is related to occupying the child so as to free up time for the parent to do other tasks or to reduce parents' stress. The third factor is related to screen use as a means of learning, whether it be learning facts, languages, or about the digital world itself. The fourth factor is related to emotion regulation of the child, including items relating to calming the child down and reducing their anger.
+
+```{r}
+#| label: tbl-fa-interaction
+#| tbl-cap: Factor analysis for parent--child interaction during screen use items, showing a three-factor solution. Colours indicate loading scores, with red indicating negative loadings and blue indicating positive loadings.
+
+fa_interaction <- readRDS(here("models", "loadings_interaction.rds")) |> 
+  left_join(df_data_vars, by = join_by(item == column)) |> 
+  mutate(var_label = str_remove_all(var_label, "Interaction: ")) |> 
+  select(Item = var_label, `Expanding` = ML3,
+         `Focusing` = ML2, `Asking` = ML1) |> 
+  gt() |> 
+  fmt_number(decimals = 2) |> 
+  data_color(columns = -Item,
+             domain = c(-1, 1),
+             palette = "RdBu") |> 
+  tab_spanner(label = "Factor loadings",
+              columns = -Item) |> 
+  cols_width(
+    Item ~ px(340),
+    everything() ~ px(90)
+  ) |> 
+  tab_options(table.font.size = 11)
+
+fa_interaction
+```
+
+For parent--child interactions, parallel analysis suggested a three-factor solution. Factor loadings for each of the parent--child interaction items are shown in @tbl-fa-interaction. The first factor is related to the parent drawing in other information by expanding on content, reinforcing ideas, or relating content to other ideas. The second factor is related to the parent focusing the child's attention on the content by commenting, naming, or pointing to aspects of the content. The third factor is related to the parent asking questions about the content, including asking about what is happening or asking the child to name aspects of the content.
+
+## Causal mediation analysis
+
+```{r}
+mod_sem_fix <- readRDS(here("models", "mod_sem_fix.rds"))
+
+mod_mcmc <- get_derived_draws(mod_sem_fix)
+
+mod_hpd <- HPDinterval(as.mcmc(mod_mcmc), prob = 0.95) |> 
+  as_tibble(rownames = "var")
+mod_means <- mod_mcmc |> 
+  summarise(across(everything(), \(x) mean(x, na.rm = TRUE))) |> 
+  pivot_longer(everything(), names_to = "var", values_to = "mean")
+mod_est <- mod_means |> 
+  left_join(mod_hpd, by = join_by(var)) |> 
+  rename(ci.lower = lower, ci.upper = upper)
+
+mod_pars <- get_model_parameters(mod_sem_fix) |> 
+  left_join(mod_est, by = join_by(label == var))
+```
+
+The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero.
+
+### Overall effects
+
+```{r}
+#| label: tbl-overall-effects
+#| tbl-cap: Overall effects of structural factors on vocabulary percentiles, showing posterior means and 95% highest density credible intervals. All estimates are for one additional half-day of childcare per week or one additional older sibling.
+
+overall_effects <- mod_pars |> 
+  filter(str_detect(label, "E_")) |> 
+  rowwise() |> 
+  mutate(value = print_est_ci(mean, ci.lower, ci.upper)) |> 
+  select(label, value) |> 
+  separate_wider_delim(label, delim = "_", names = c("effect", "structural_factor")) |> 
+  pivot_wider(names_from = structural_factor,
+              values_from = value) |> 
+  setNames(c("Effect", "Childcare", "Num older siblings")) |> 
+  gt()
+
+overall_effects
+```
+
+
+The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects. The CrI for the total effect of amount of childcare on vocabulary percentiles included zero, as did all direct and indirect effects. Similarly, the CrI for the total effect of number of older siblings on vocabulary percentiles included zero, as did all direct and indirect effects. These results suggest that neither structural factor had a reliable effect on vocabulary percentiles in this sample.
+
+### Component effects
+
+To further understand the SEM, we examined the individual steps of the model, considering the predictors of the first-level mediators, the second-level mediators, and the outcome. 
+
+#### First-level mediators
+
+```{r}
+#| label: tbl-first-level-med
+#| tbl-cap: Predictors of first-level mediators, showing posterior means and 95% highest density credible intervals. All estimates are on the original scale of the mediator. Bolded values indicate reliable effects.
+
+first_level_med <- mod_pars |> 
+  filter(str_starts(lhs, "motivation"),
+         op == "~") |> 
+  rowwise() |> 
+  mutate(value = print_est_ci(mean, ci.lower, ci.upper),
+         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+  ungroup() |> 
+  select(lhs, rhs, value) |> 
+  mutate(rhs = str_replace_all(rhs, c(
+    age = "Age",
+    gender = "Gender",
+    ses.L = "SES: Linear",
+    ses.Q = "SES: Quadratic",
+    ses.C = "SES: Cubic",
+    ses.4 = "SES: Quartic",
+    ses.5 = "SES: Quintic",
+    childcare_halfdays = "Childcare",
+    num_older_siblings = "Num older siblings"
+  ))) |> 
+  pivot_wider(names_from = "lhs", values_from = "value") |> 
+  setNames(c("Predictor", "Behavioural management", "Freeing parent", "Learning", "Emotion regulation")) |> 
+  gt() |> 
+  tab_spanner(label = "Motivation",
+              columns = -Predictor) |> 
+  fmt_markdown(everything()) |> 
+  cols_align(align = "center", columns = -Predictor) |> 
+  cols_width(
+    Predictor ~ px(200),
+    everything() ~ px(100)
+  ) |> 
+  tab_options(table.font.size = 11)
+
+first_level_med
+```
+
+```{r}
+#| label: fig-first-level-ses
+#| fig-cap: Estimated effects of SES on first-level mediators, showing posterior means and 95% highest density credible intervals. All estimates are on the original scale of the mediator.
+
+first_ses_est <- ses_draws(
+  params = c("motivation_behmgmt", "motivation_freeing", 
+             "motivation_learning", "motivation_emoreg"),
+  mod_pars = mod_pars,
+  mod_mcmc = mod_mcmc
+) |> 
+  mutate(var = var |> 
+           str_remove_all("motivation_") |> 
+           factor(levels = c("behmgmt", "freeing", "learning", "emoreg"),
+                  labels = c(
+                    "Behavioural management",
+                    "Freeing parent",
+                    "Learning",
+                    "Emotion regulation"
+                  )),
+         ses = ses |> 
+           factor(labels = c("Primary", "Secondary", "Matura", "College", "Bachelor", "Master")))
+
+ggplot(first_ses_est, aes(x = ses, y = mean, color = var)) +
+  geom_line(aes(group = var), position = position_dodge(0.2)) +
+  geom_errorbar(aes(ymin = ci.lower, ymax = ci.upper), 
+                width = 0.1, position = position_dodge(0.2)) +
+  labs(x = "SES", y = "Estimated marginal mean", col = "Motivation") +
+  scale_color_brewer(palette = "Set2") +
+  theme(legend.position = "bottom") +
+  guides(col = guide_legend(nrow = 2, byrow = TRUE))
+```
+
+Predictors of the first-level mediators are shown in @tbl-first-level-med. Both the motivations of behavioural management and freeing up parents had higher-order SES effects; these effects are visualised in @fig-first-level-ses, suggesting that parents with the lowest SES levels experienced greater motivations for behavioural management and freeing up time. The learning motivation had a reliable effect of age, such that children who were one year older also had parents who were more motivated to use screens for learning. All other predictors of the first-level mediators had CrIs that included zero, suggesting no reliable effects.
+
+#### Second-level mediators
+
+```{r}
+#| label: tbl-second-level-med
+#| tbl-cap: Predictors of second-level mediators, showing posterior means and 95% highest density credible intervals. All estimates are on the original scale of the mediator except for accompanied screen use, which is on the logit scale. Bolded values indicate reliable effects.
+
+second_level_med <- mod_pars |> 
+  filter(str_starts(lhs, "interaction") | lhs == "supervision_accompanied" | lhs == "screentime_weekly",
+         op == "~") |> 
+  rowwise() |> 
+  mutate(value = print_est_ci(mean, ci.lower, ci.upper),
+         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+  ungroup() |> 
+  select(lhs, rhs, value) |> 
+  mutate(rhs = str_replace_all(rhs, c(
+    age = "Age",
+    gender = "Gender",
+    ses.L = "SES: Linear",
+    ses.Q = "SES: Quadratic",
+    ses.C = "SES: Cubic",
+    ses.4 = "SES: Quartic",
+    ses.5 = "SES: Quintic",
+    childcare_halfdays = "Childcare",
+    num_older_siblings = "Num older siblings",
+    motivation_behmgmt = "Motivation: Behavioural mangement",
+    motivation_freeing = "Motivation: Freeing parent",
+    motivation_learning = "Motivation: Learning",
+    motivation_emoreg = "Motivation: Emotion regulation"
+  ))) |> 
+  pivot_wider(names_from = "lhs", values_from = "value") |> 
+  setNames(c("Predictor", "Expanding", "Focusing", "Asking", 
+             "Accompanied screen use", "Weekly screen time")) |> 
+  gt() |> 
+  tab_spanner(label = "Interaction",
+              columns = c("Expanding", "Focusing", "Asking")) |> 
+  fmt_markdown(everything()) |> 
+  cols_align(align = "center", columns = -Predictor) |> 
+  cols_width(
+    Predictor ~ px(150),
+    everything() ~ px(90)
+  ) |> 
+  tab_options(table.font.size = 11)
+
+second_level_med
+```
+
+Predictors of the second-level mediators are shown in @tbl-second-level-med. For the expanding interaction, the effect of age was reliable and positive, such that parents of older children were more likely to expand on the content on the screen. For the focusing interaction, the reliable effects were of gender and learning motivation, such that parents of boys and who were more motivated by their child's learning were more likely to focus the child's attention on the content. For the asking interaction, the effect of age was reliable and positive, such that parents of older children were more likely to ask about content on the screen.
+
+For the indication of whether children used screens while accompanied, the reliable predictors were age, as well as the motivations of behavioural management and learning, all of which were positive. Finally, in terms of weekly screen time, there were reliable positive effects of age and the motivations of learning and emotion regulation, as well as a reliable negative effect of amount of childcare.
+
+#### Outcome
+
+```{r}
+#| label: tbl-outcome
+#| tbl-cap: Predictors of vocabulary percentile, showing posterior means and 95% highest density credible intervals. All estimates are on the percentile scale. Bolded values indicate reliable effects.
+
+outcome <- mod_pars |> 
+  filter(lhs == "centile",
+         op == "~") |> 
+  rowwise() |> 
+  mutate(value = print_est_ci(mean, ci.lower, ci.upper),
+         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+  ungroup() |> 
+  select(lhs, rhs, value) |> 
+  mutate(rhs = str_replace_all(rhs, c(
+    age = "Age",
+    gender = "Gender",
+    ses.L = "SES: Linear",
+    ses.Q = "SES: Quadratic",
+    ses.C = "SES: Cubic",
+    ses.4 = "SES: Quartic",
+    ses.5 = "SES: Quintic",
+    childcare_halfdays = "Intercept/Main effect_Childcare",
+    num_older_siblings = "Intercept/Main effect_Num older siblings",
+    motivation_behmgmt = "Motivation: Behavioural management",
+    motivation_freeing = "Motivation: Freeing parent",
+    motivation_learning = "Motivation: Learning",
+    motivation_emoreg = "Motivation: Emotion regulation",
+    interaction_expanding = "Interaction: Expanding",
+    interaction_focusing = "Interaction: Focusing",
+    interaction_asking = "Interaction: Asking",
+    supervision_accompanied = "Accompanied screen use",
+    screentime_weekly = "Weekly screen time",
+    exp_time = "Interaction: Expanding_Weekly screen time",
+    foc_time = "Interaction: Focusing_Weekly screen time",
+    ask_time = "Interaction: Asking_Weekly screen time",
+    acc_time = "Accompanied screen use_Weekly screen time",
+    child_beh = "Motivation: Behavioural management_Childcare",
+    child_free = "Motivation: Freeing parent_Childcare",
+    child_learn = "Motivation: Learning_Childcare",
+    child_emo = "Motivation: Emotion regulation_Childcare",
+    child_exp = "Interaction: Expanding_Childcare",
+    child_foc = "Interaction: Focusing_Childcare",
+    child_ask = "Interaction: Asking_Childcare",
+    child_acc = "Accompanied screen use_Childcare",
+    child_time = "Weekly screen time_Childcare",
+    sib_beh = "Motivation: Behavioural management_Num older siblings",
+    sib_free = "Motivation: Freeing parent_Num older siblings",
+    sib_learn = "Motivation: Learning_Num older siblings",
+    sib_emo = "Motivation: Emotion regulation_Num older siblings",
+    sib_exp = "Interaction: Expanding_Num older siblings",
+    sib_foc = "Interaction: Focusing_Num older siblings",
+    sib_ask = "Interaction: Asking_Num older siblings",
+    sib_acc = "Accompanied screen use_Num older siblings",
+    sib_time = "Weekly screen time_Num older siblings"
+  ))) |> 
+  separate_wider_delim(rhs, delim = "_", names = c("effect", "interaction"),
+                       too_few = "align_start") |>
+  pivot_wider(names_from = "interaction", values_from = "value") |> 
+  select(-lhs) |> 
+  setNames(c("Predictor", "Main effect", "Childcare effect", "Older siblings effect", 
+             "Screen time effect")) |> 
+  mutate(rownum = seq_along(Predictor)) |> 
+  slice(order(rownum != 8)) |> 
+  select(-rownum) |> 
+  gt() |> 
+  fmt_markdown(everything()) |> 
+  sub_missing(everything()) |> 
+  cols_align(align = "center", columns = -Predictor) |> 
+  cols_width(
+    Predictor ~ px(200),
+    everything() ~ px(90)
+  ) |> 
+  tab_options(table.font.size = 11)
+
+outcome
+```
+
+Predictors of the outcome are shown in @tbl-outcome. The only reliable effect is that of age, which is negative. Note that we had removed some variance due to age in the process of obtaining age percentiles; however, as this study sampled from a multilingual population, there may have been some residual variance due to age that was not accounted for in the monolingual CDI percentiles.

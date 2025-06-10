@@ -1,0 +1,512 @@
+---
+title: "Analysis pipeline"
+format: html
+---
+
+```{r}
+# data handling
+library(tidyverse)
+library(haven)
+library(readxl)
+library(here)
+library(wordbankr)
+
+# modelling
+library(psych)
+library(gamlss)
+# devtools::install_github("BS1125/CMAverse")
+library(CMAverse)
+library(lavaan)
+library(blavaan)
+library(coda)
+
+# additional scripts
+source("centiles_pred_fix.R")
+source("pretty_scree_plot.R")
+source("blavaan_helpers.R")
+
+# theme
+theme_set(theme_classic())
+```
+
+# Data loading
+```{r}
+df_data <- read_sav(here("data", "SWIPE_HETSL_2025-01-10.sav"))
+
+df_data_vars <- tibble(
+  column = colnames(df_data),
+  var_label = map(df_data, \(x) (attr(x,"label") |> as.character())[1]) |> list_c()
+)
+```
+
+# Data processing: Mediators
+## Parental motivations
+```{r}
+df_data_motivation <- df_data |> 
+  select(matches("CX_[a-z][A-Za-z]+$"),
+         -"CX_otherContextText",
+         -"CX_covid",
+         -"CX_otherContext")
+
+KMO(df_data_motivation)
+cortest.bartlett(df_data_motivation)
+```
+
+```{r}
+pa_motivation <- fa.parallel(df_data_motivation,
+                              fm = "ml",
+                              fa = "fa")
+
+pretty_scree_plot(pa_motivation)
+```
+
+```{r}
+efa_motivation <- fa(df_data_motivation,
+                     nfactors = pa_motivation$nfact,
+                     rotate = "varimax",
+                     fm = "ml",
+                     residuals = TRUE,
+                     scores = TRUE)
+efa_motivation
+loadings_motivation <- fa.sort(efa_motivation)$loadings |> 
+  unclass() |> 
+  as_tibble(rownames = "item")
+scores_motivation <- efa_motivation$scores |> 
+  as_tibble() |> 
+  mutate(ID = df_data$ID) |> 
+  rename(motivation_behmgmt = ML3,
+         motivation_freeing = ML1,
+         motivation_learning = ML2,
+         motivation_emoreg = ML4)
+saveRDS(loadings_motivation, here("models", "loadings_motivation.rds"))
+```
+
+Potential names for factors:
+- ML3: Child behaviour management (become sleepy, work done, child bored, eat better, time friends, calm down)
+- ML1: Freeing up time for parent (housework done, work done, calm my stress, have peace)
+- ML2: Child's learning (learn something new, improve native language, learn foreign language, preparing digital future)
+- ML4: Emotion regulation (calm down, child anger, have peace, calm my stress)
+
+## Infant interactions
+```{r}
+df_data_interaction <- df_data |> 
+  select(matches("CX_Interaction_[a-z][A-Z]+$"))
+
+KMO(df_data_interaction)
+cortest.bartlett(df_data_interaction)
+```
+
+```{r}
+pa_interaction <- fa.parallel(df_data_interaction,
+                          fm = "ml",
+                          fa = "fa")
+
+pretty_scree_plot(pa_interaction)
+```
+
+```{r}
+efa_interaction <- fa(df_data_interaction,
+                     nfactors = pa_interaction$nfact,
+                     rotate = "varimax",
+                     fm = "ml",
+                     residuals = TRUE,
+                     scores = TRUE)
+efa_interaction
+loadings_interaction <- fa.sort(efa_interaction)$loadings |> 
+  unclass() |> 
+  as_tibble(rownames = "item")
+scores_interaction <- efa_interaction$scores |> 
+  as_tibble() |> 
+  mutate(ID = df_data$ID) |>
+  rename(interaction_expanding = ML3,
+         interaction_focusing = ML2,
+         interaction_asking = ML1)
+saveRDS(loadings_interaction, here("models", "loadings_interaction.rds"))
+```
+
+Possible names for factors:
+- ML3: Expanding (expanding, reinforcing, relating content)
+- ML2: Focusing (commenting, naming, pointing)
+- ML1: Asking (asking happening, asking naming)
+
+## Infant supervision
+```{r}
+df_data_supervision <- df_data |> 
+  select(matches("CX_Supervision_[A-Z][a-z]+$"),
+         -CX_Supervision_OtherText)
+
+KMO(df_data_supervision)
+cortest.bartlett(df_data_supervision)
+```
+
+```{r}
+pa_supervision <- fa.parallel(df_data_supervision,
+                             fm = "ml",
+                             fa = "fa")
+
+pretty_scree_plot(pa_supervision)
+```
+
+No factors suggested. We use theoretical structure: supervised or not supervised.
+```{r}
+scores_supervision <- df_data |> 
+  mutate(
+    supervision_accompanied = pmin(1, CX_Supervision_Parent + CX_Supervision_Sibling + CX_Supervision_Other),
+    supervision_alone = CX_Supervision_None
+  ) |> 
+  select(ID, supervision_accompanied, supervision_alone)
+```
+
+## Infant screen time
+```{r}
+scores_screentime <- df_data |> 
+  mutate(screentime_weekly = pmin(480 * 7, totalTimeWkday * 5 + totalTimeWkend * 2) / 60) |> 
+  select(ID, screentime_weekly)
+```
+
+# Data processing: Vocab percentiles
+```{r}
+name_p <- c("prononce et comprend", "Dice e capisce", "Understands and says")
+name_u <- c("comprend", "Capisce", "Understands")
+
+# df_vars <- tibble(
+#   column = colnames(df_data),
+#   var_label = map(df_data, \(x) (attr(x,"label") |> as.character())[1]) |> list_c()
+# ) |> write_csv("columns.csv")
+df_vars <- read_csv(here("data", "columns.csv")) |> 
+  mutate(measure = ifelse(item_type == "word", 
+                          ifelse(map(var_label, \(l) any(str_detect(l, name_p))), 
+                                 "produces",
+                                 ifelse(map(var_label, \(l) any(str_detect(l, name_u))), 
+                                        "understands", 
+                                        "produces")),
+                          NA))
+
+df_long <- df_data |> select(ID, age = ageChild, starts_with("HETSL")) |>
+  mutate(across(starts_with("HETSL"), as.character)) |>
+  pivot_longer(cols = starts_with("HETSL"), names_to = "item", values_to = "value") |> 
+  left_join(df_vars, by = join_by(item == column)) |>
+  separate_wider_delim(col = "item", delim = "_",
+                       names = c("HETSL", "form", "category", "item_num"),
+                       too_few = "align_start", too_many = "merge") |> 
+  filter(item_type == "word") |> 
+  mutate(produces = ifelse(measure == "produces", value, NA),
+         understands = ifelse(form %in% c("E.8", "F.8", "I.8"), value, NA))
+
+df_sum <- df_long |>
+  group_by(ID, age, form) |>
+  summarise(produces = sum(produces == 1, na.rm = TRUE),
+            understands = sum(understands == 1, na.rm = TRUE),
+            .groups = "drop") |> 
+  mutate(
+    language = str_replace_all(form, c(
+      "E.18" = "English",
+      "E.8" = "English",
+      "F.17" = "French",
+      "F.8" = "French",
+      "G.18" = "German",
+      "I.8" = "Italian",
+      "MCD.I.17" = "Italian"
+    )),
+    form = str_replace_all(form, c(
+      "E.18" = "WS",
+      "E.8" = "WG",
+      "F.17" = "WS",
+      "F.8" = "WG",
+      "G.18" = "WS",
+      "I.8" = "WG",
+      "MCD.I.17" = "WS"
+    )),
+  ) |> 
+  filter(produces > 0 | understands > 0)
+
+df_sum_wide <- df_sum |>
+  pivot_wider(id_cols = ID, names_from = c(language, form), values_from = produces)
+
+df_sum_sum <- df_sum |>
+  group_by(ID) |>
+  summarise(n_forms = sum(produces > 0 | understands > 0))
+```
+
+## Get norming data
+```{r}
+db_args <- list(
+	"host" = "wordbank2-prod-20240205.canyiscnpddk.us-west-2.rds.amazonaws.com",
+	"dbname" = "wordbank",
+	"user" = "wordbank_reader",
+	"password" = "ICanOnlyRead@99"
+)
+df_eng_ws <- get_administration_data("English (American)", "WS", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_eng_wg <- get_administration_data("English (American)", "WG", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_fra_ws <- get_administration_data("French (French)", "WS", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_fra_wg <- get_administration_data("French (French)", "WG", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_deu_ws <- get_administration_data("German", "WS", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_ita_ws <- get_administration_data("Italian", "WS", include_language_exposure = TRUE,
+                                     db_args = db_args)
+df_ita_wg <- get_administration_data("Italian", "WG", include_language_exposure = TRUE,
+                                     db_args = db_args)
+```
+
+```{r}
+inst_num_items <- df_vars |> 
+  separate_wider_delim(col = "column", delim = "_",
+                       names = c("HETSL", "form", "category", "item_num"),
+                       too_few = "align_start", too_many = "merge") |> 
+  filter(item_type == "word",
+         measure == "produces") |> 
+  group_by(form) |> 
+  summarise(max = n()) |> 
+  mutate(
+    language = str_replace_all(form, c(
+      "E.18" = "English",
+      "E.8" = "English",
+      "F.17" = "French",
+      "F.8" = "French",
+      "G.18" = "German",
+      "I.8" = "Italian",
+      "MCD.I.17" = "Italian"
+    )),
+    form = str_replace_all(form, c(
+      "E.18" = "WS",
+      "E.8" = "WG",
+      "F.17" = "WS",
+      "F.8" = "WG",
+      "G.18" = "WS",
+      "I.8" = "WG",
+      "MCD.I.17" = "WS"
+    )),
+  )
+
+get_centiles <- function(wb_data, cache = TRUE, cache_dir = here("models"), use_cache = TRUE) {
+  lang <- wb_data$language[1] |> str_remove(" .*")
+  form <- wb_data$form[1]
+  
+  if (cache) {
+    if (!dir.exists(cache_dir)) {
+      dir.create(cache_dir)
+    }
+    cache_file <- file.path(cache_dir, paste0("centiles_", lang, "_", form, ".rds"))
+    if (file.exists(cache_file) && use_cache) {
+      return(readRDS(cache_file))
+    }
+  }
+  
+  has_long <- (wb_data$child_id |> duplicated() |> sum()) > 0
+  mod_data <<- wb_data |> 
+    filter(map_lgl(language_exposures, is.null)) |> 
+    mutate(language = str_remove(language, " .*")) |> 
+    left_join(inst_num_items, by = join_by(language, form)) |> 
+    mutate(prop_vocab = if (form == "WS") production / max else comprehension / max,
+           prop_vocab = case_when(
+             prop_vocab == 0 ~ 0.001,
+             prop_vocab == 1 ~ 0.999,
+             .default = prop_vocab
+           ),
+           child_id = as_factor(child_id)) |> 
+    filter(!is.na(prop_vocab)) |> 
+    select(age, prop_vocab, child_id)
+  
+  if (has_long) {
+    mod <- gamlss(prop_vocab ~ pbm(age, lambda = 1e5) +
+                    re(random = ~ 1 | child_id, level = 0),
+                  sigma.formula = ~ pbm(age, lambda = 1e5),
+                  family = BE(),
+                  data = mod_data,
+                  control = gamlss.control(n.cyc = 100))
+    cent <- centiles.pred(mod, type = "centiles",
+                          cent = 1:99,
+                          xname = "age", 
+                          xvalues = seq(min(mod_data$age), max(mod_data$age)),
+                          re = "child_id")
+  } else {
+    mod <- gamlss(prop_vocab ~ pbm(age, lambda = 1e5),
+                  sigma.formula = ~ pbm(age, lambda = 1e5),
+                  family = BE(),
+                  data = mod_data,
+                  control = gamlss.control(n.cyc = 100))
+    cent <- centiles.pred(mod, type = "centiles",
+                          cent = 1:99,
+                          xname = "age", 
+                          xvalues = seq(min(mod_data$age), max(mod_data$age)))
+  }
+  rm(mod_data, envir = .GlobalEnv)
+  
+  out <- tibble(
+    model = list(mod),
+    centiles = list(cent),
+    language = lang,
+    form = form
+  )
+  if (cache) {
+    saveRDS(out, cache_file)
+  }
+  out
+}
+```
+
+```{r}
+centiles_eng_ws <- get_centiles(df_eng_ws)
+centiles_eng_wg <- get_centiles(df_eng_wg)
+centiles_fra_ws <- get_centiles(df_fra_ws)
+centiles_fra_wg <- get_centiles(df_fra_wg)
+centiles_deu_ws <- get_centiles(df_deu_ws)
+centiles_ita_ws <- get_centiles(df_ita_ws)
+centiles_ita_wg <- get_centiles(df_ita_wg)
+```
+
+```{r}
+all_centiles <- bind_rows(
+  centiles_eng_ws,
+  centiles_eng_wg,
+  centiles_fra_ws,
+  centiles_fra_wg,
+  centiles_deu_ws,
+  centiles_ita_ws,
+  centiles_ita_wg
+) |> 
+  select(-model) |> 
+  unnest(centiles) |> 
+  rename(age = x) |> 
+  pivot_longer(cols = -c(age, language, form),
+               names_to = "centile", values_to = "prop_vocab") |> 
+  mutate(centile = as.numeric(centile))
+```
+
+## Merge norms with data
+```{r}
+df_centiles <- df_sum |> 
+  left_join(inst_num_items, 
+            by = join_by(language, form)) |> 
+  mutate(prop_vocab_true = ifelse(form == "WS", produces / max, understands / max)) |> 
+  left_join(all_centiles, 
+            by = join_by(language, form, age),
+            relationship = "many-to-many") |> 
+  filter(!is.na(centile)) |> 
+  group_nest(ID, language, form, age, prop_vocab_true) |> 
+  mutate(centile = map2_dbl(prop_vocab_true, data, 
+                            \(x, y) y$centile[which.min(abs(y$prop_vocab - x))])) |> 
+  select(-data) |> 
+  rename(prop_vocab = prop_vocab_true)
+```
+
+# Data processing: Combining all variables
+
+```{r}
+df_all <- df_data |> 
+  mutate(num_older_siblings = siblingsN - siblingsYoungerN) |>
+  select(ID, age = ageChild, gender = genderChild, ses = parentEducationAbrev, 
+         num_older_siblings, childcare_halfdays = supervisionHalfdays) |> 
+  left_join(scores_motivation, by = "ID") |> 
+  left_join(scores_interaction, by = "ID") |> 
+  left_join(scores_supervision, by = "ID") |> 
+  left_join(scores_screentime, by = "ID") |> 
+  left_join(df_centiles, by = c("ID", "age")) |> 
+  mutate(ID = as.character(ID),
+         age = as.numeric(age),
+         gender = as.numeric(gender - 1) |> na_if(3),
+         ses = factor(ses, ordered = TRUE),
+         num_older_siblings = as.numeric(num_older_siblings),
+         childcare_halfdays = as.numeric(childcare_halfdays),
+         supervision_alone = as.numeric(supervision_alone),
+         screentime_weekly = as.numeric(screentime_weekly))
+```
+
+# Modelling
+
+```{r}
+source("mod_str.R")
+options(future.globals.maxSize = 1500 * 1024^2)
+```
+
+```{r}
+df_all_fix <- df_all |> 
+  filter(complete.cases(df_all)) |> 
+  mutate(ses = ses |> fct_drop(),
+         ses = ses |> `contrasts<-`(value = contr.poly(nlevels(ses))), 
+         age = scale(age, scale = F),
+         gender = gender - 0.5,
+         exp_time = interaction_expanding * screentime_weekly,
+         foc_time = interaction_focusing * screentime_weekly,
+         ask_time = interaction_asking * screentime_weekly,
+         acc_time = supervision_accompanied * screentime_weekly,
+         child_beh = childcare_halfdays * motivation_behmgmt,
+         child_free = childcare_halfdays * motivation_freeing,
+         child_learn = childcare_halfdays * motivation_learning,
+         child_emo = childcare_halfdays * motivation_emoreg,
+         child_exp = childcare_halfdays * interaction_expanding,
+         child_foc = childcare_halfdays * interaction_focusing,
+         child_ask = childcare_halfdays * interaction_asking,
+         child_acc = childcare_halfdays * supervision_accompanied,
+         child_time = childcare_halfdays * screentime_weekly,
+         sib_beh = num_older_siblings * motivation_behmgmt,
+         sib_free = num_older_siblings * motivation_freeing,
+         sib_learn = num_older_siblings * motivation_learning,
+         sib_emo = num_older_siblings * motivation_emoreg,
+         sib_exp = num_older_siblings * interaction_expanding,
+         sib_foc = num_older_siblings * interaction_focusing,
+         sib_ask = num_older_siblings * interaction_asking,
+         sib_acc = num_older_siblings * supervision_accompanied,
+         sib_time = num_older_siblings * screentime_weekly)
+df_all_fix <- df_all_fix |> 
+  bind_cols(poly(df_all_fix$ses, degree = 5) |> 
+              as_tibble() |> 
+              setNames(c("ses.L", "ses.Q", "ses.C", "ses.4", "ses.5")))
+ses_vals <- df_all_fix |> 
+  select(starts_with("ses")) |> 
+  distinct() |> 
+  group_by(ses) |> 
+  slice(1)
+write_csv(ses_vals, here("data", "ses_vals.csv"))
+
+# note mismatch in number: it is because we drop level 1, so the 6th level is "7"
+ses6 <- df_all_fix |> filter(ses == 7) |> select(starts_with("ses")) |> slice(1)
+ses6_rep <- c(
+  "ses6_L" = ses6$ses.L |> as.character(),
+  "ses6_Q" = ses6$ses.Q |> as.character(),
+  "ses6_C" = ses6$ses.C |> as.character(),
+  "ses6_4" = ses6$ses.4 |> as.character(),
+  "ses6_5" = ses6$ses.5 |> as.character()
+)
+mod_str_fix <- mod_str |> 
+  str_replace_all(ses6_rep)
+```
+
+```{r eval=F}
+mod_sem_fix <- bsem(mod_str_fix, 
+                data = df_all_fix,
+                ordered = c("supervision_accompanied"),
+                parameterization = "theta",
+                n.chains = 4,
+                sample = 6000,
+                seed = 42,
+                bcontrol = list(cores = 4))
+saveRDS(mod_sem_fix, here("models", "mod_sem_fix.rds"))
+```
+
+```{r}
+mod_sem_fix <- readRDS(here("models", "mod_sem_fix.rds"))
+mod_sem_fix |> summary()
+```
+
+```{r}
+mod_mcmc <- get_derived_draws(mod_sem_fix)
+
+mod_hpd <- HPDinterval(as.mcmc(mod_mcmc), prob = 0.95) |> 
+  as_tibble(rownames = "var")
+mod_means <- mod_mcmc |> 
+  summarise(across(everything(), \(x) mean(x, na.rm = TRUE))) |> 
+  pivot_longer(everything(), names_to = "var", values_to = "mean")
+
+mod_est <- mod_means |> 
+  left_join(mod_hpd, by = join_by(var)) |> 
+  rename(hdi.lower = lower, hdi.upper = upper)
+```
+
+```{r eval=F}
+ppmc(mod_sem_fix)
+```
