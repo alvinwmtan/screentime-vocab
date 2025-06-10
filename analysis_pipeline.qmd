@@ -394,6 +394,14 @@ df_centiles <- df_sum |>
   rename(prop_vocab = prop_vocab_true)
 ```
 
+```{r}
+df_data_centiles <- df_data |> 
+  left_join(df_centiles,
+            by = join_by(ID))
+write_sav(df_data_centiles, here("data", "swipe_centiles.sav"))
+```
+
+
 # Data processing: Combining all variables
 
 ```{r}

@@ -1,6 +1,6 @@
 ---
 title: "Analysis and Results"
-format: docx
+format: pdf
 bibliography: "references.bib"
 csl: "apa.csl"
 ---
@@ -175,7 +175,8 @@ overall_effects <- mod_pars |>
   pivot_wider(names_from = structural_factor,
               values_from = value) |> 
   setNames(c("Effect", "Childcare", "Num older siblings")) |> 
-  gt()
+  gt() |> 
+  fmt_markdown(everything())
 
 overall_effects
 ```
@@ -195,10 +196,11 @@ To further understand the SEM, we examined the individual steps of the model, co
 
 first_level_med <- mod_pars |> 
   filter(str_starts(lhs, "motivation"),
-         op == "~") |> 
+         op == "~" | op == "~1") |> 
   rowwise() |> 
   mutate(value = print_est_ci(mean, ci.lower, ci.upper),
-         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+         value = ifelse(sign(ci.lower) == sign(ci.upper) & rhs != "", 
+                        glue("**{value}**"), value)) |> 
   ungroup() |> 
   select(lhs, rhs, value) |> 
   mutate(rhs = str_replace_all(rhs, c(
@@ -211,7 +213,8 @@ first_level_med <- mod_pars |>
     ses.5 = "SES: Quintic",
     childcare_halfdays = "Childcare",
     num_older_siblings = "Num older siblings"
-  ))) |> 
+  )),
+  rhs = ifelse(rhs == "", "Intercept", rhs)) |> 
   pivot_wider(names_from = "lhs", values_from = "value") |> 
   setNames(c("Predictor", "Behavioural management", "Freeing parent", "Learning", "Emotion regulation")) |> 
   gt() |> 
@@ -220,8 +223,8 @@ first_level_med <- mod_pars |>
   fmt_markdown(everything()) |> 
   cols_align(align = "center", columns = -Predictor) |> 
   cols_width(
-    Predictor ~ px(200),
-    everything() ~ px(100)
+    Predictor ~ px(115),
+    everything() ~ px(122)
   ) |> 
   tab_options(table.font.size = 11)
 
@@ -270,13 +273,16 @@ Predictors of the first-level mediators are shown in @tbl-first-level-med. Both 
 
 second_level_med <- mod_pars |> 
   filter(str_starts(lhs, "interaction") | lhs == "supervision_accompanied" | lhs == "screentime_weekly",
-         op == "~") |> 
+         op == "~" | op == "~1" | op == "|",
+         !is.na(mean)) |> 
   rowwise() |> 
   mutate(value = print_est_ci(mean, ci.lower, ci.upper),
-         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+         value = ifelse(sign(ci.lower) == sign(ci.upper) & !rhs %in% c("", "t1"), 
+                        glue("**{value}**"), value)) |> 
   ungroup() |> 
   select(lhs, rhs, value) |> 
   mutate(rhs = str_replace_all(rhs, c(
+    t1 = "Intercept",
     age = "Age",
     gender = "Gender",
     ses.L = "SES: Linear",
@@ -290,7 +296,8 @@ second_level_med <- mod_pars |>
     motivation_freeing = "Motivation: Freeing parent",
     motivation_learning = "Motivation: Learning",
     motivation_emoreg = "Motivation: Emotion regulation"
-  ))) |> 
+  )),
+  rhs = ifelse(rhs == "", "Intercept", rhs)) |> 
   pivot_wider(names_from = "lhs", values_from = "value") |> 
   setNames(c("Predictor", "Expanding", "Focusing", "Asking", 
              "Accompanied screen use", "Weekly screen time")) |> 
@@ -320,10 +327,11 @@ For the indication of whether children used screens while accompanied, the relia
 
 outcome <- mod_pars |> 
   filter(lhs == "centile",
-         op == "~") |> 
+         op == "~" | op == "~1") |> 
   rowwise() |> 
   mutate(value = print_est_ci(mean, ci.lower, ci.upper),
-         value = ifelse(sign(ci.lower) == sign(ci.upper), glue("**{value}**"), value)) |> 
+         value = ifelse(sign(ci.lower) == sign(ci.upper) & rhs != "", 
+                        glue("**{value}**"), value)) |> 
   ungroup() |> 
   select(lhs, rhs, value) |> 
   mutate(rhs = str_replace_all(rhs, c(
@@ -367,7 +375,8 @@ outcome <- mod_pars |>
     sib_ask = "Interaction: Asking_Num older siblings",
     sib_acc = "Accompanied screen use_Num older siblings",
     sib_time = "Weekly screen time_Num older siblings"
-  ))) |> 
+  )),
+  rhs = ifelse(rhs == "", "Intercept/Main effect", rhs)) |> 
   separate_wider_delim(rhs, delim = "_", names = c("effect", "interaction"),
                        too_few = "align_start") |>
   pivot_wider(names_from = "interaction", values_from = "value") |> 
@@ -375,7 +384,7 @@ outcome <- mod_pars |>
   setNames(c("Predictor", "Main effect", "Childcare effect", "Older siblings effect", 
              "Screen time effect")) |> 
   mutate(rownum = seq_along(Predictor)) |> 
-  slice(order(rownum != 8)) |> 
+  # slice(order(rownum != 8)) |> 
   select(-rownum) |> 
   gt() |> 
   fmt_markdown(everything()) |> 
@@ -391,3 +400,5 @@ outcome
 ```
 
 Predictors of the outcome are shown in @tbl-outcome. The only reliable effect is that of age, which is negative. Note that we had removed some variance due to age in the process of obtaining age percentiles; however, as this study sampled from a multilingual population, there may have been some residual variance due to age that was not accounted for in the monolingual CDI percentiles.
+
+# References
