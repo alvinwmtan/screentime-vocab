@@ -257,9 +257,10 @@ ggplot(first_ses_est, aes(x = ses, y = mean, color = var)) +
   geom_line(aes(group = var), position = position_dodge(0.2)) +
   geom_errorbar(aes(ymin = ci.lower, ymax = ci.upper), 
                 width = 0.1, position = position_dodge(0.2)) +
-  labs(x = "SES", y = "Estimated marginal mean", col = "Motivation") +
+  labs(x = "Parental education", y = "Estimated marginal mean", col = "Motivation") +
   scale_color_brewer(palette = "Set2") +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "inside",
+        legend.position.inside = c(0.7, 0.85)) +
   guides(col = guide_legend(nrow = 2, byrow = TRUE))
 ```
 

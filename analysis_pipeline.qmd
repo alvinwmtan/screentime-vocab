@@ -230,26 +230,27 @@ df_sum_sum <- df_sum |>
 
 ## Get norming data
 ```{r}
-db_args <- list(
-	"host" = "wordbank2-prod-20240205.canyiscnpddk.us-west-2.rds.amazonaws.com",
-	"dbname" = "wordbank",
-	"user" = "wordbank_reader",
-	"password" = "ICanOnlyRead@99"
-)
-df_eng_ws <- get_administration_data("English (American)", "WS", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_eng_wg <- get_administration_data("English (American)", "WG", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_fra_ws <- get_administration_data("French (French)", "WS", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_fra_wg <- get_administration_data("French (French)", "WG", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_deu_ws <- get_administration_data("German", "WS", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_ita_ws <- get_administration_data("Italian", "WS", include_language_exposure = TRUE,
-                                     db_args = db_args)
-df_ita_wg <- get_administration_data("Italian", "WG", include_language_exposure = TRUE,
-                                     db_args = db_args)
+df_eng_ws <- get_administration_data("English (American)", "WS",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_eng_wg <- get_administration_data("English (American)", "WG",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_fra_ws <- get_administration_data("French (French)", "WS",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_fra_wg <- get_administration_data("French (French)", "WG",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_deu_ws <- get_administration_data("German", "WS",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_ita_ws <- get_administration_data("Italian", "WS",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
+df_ita_wg <- get_administration_data("Italian", "WG",
+                                     include_demographic_info = TRUE, 
+                                     include_language_exposure = TRUE)
 ```
 
 ```{r}
@@ -428,12 +429,12 @@ df_all <- df_data |>
 
 ```{r}
 source("mod_str.R")
-options(future.globals.maxSize = 1500 * 1024^2)
+options(future.globals.maxSize = 2000 * 1024^2)
 ```
 
 ```{r}
 df_all_fix <- df_all |> 
-  filter(complete.cases(df_all)) |> 
+  # filter(complete.cases(df_all)) |> 
   mutate(ses = ses |> fct_drop(),
          ses = ses |> `contrasts<-`(value = contr.poly(nlevels(ses))), 
          age = scale(age, scale = F),
@@ -460,10 +461,15 @@ df_all_fix <- df_all |>
          sib_ask = num_older_siblings * interaction_asking,
          sib_acc = num_older_siblings * supervision_accompanied,
          sib_time = num_older_siblings * screentime_weekly)
-df_all_fix <- df_all_fix |> 
-  bind_cols(poly(df_all_fix$ses, degree = 5) |> 
-              as_tibble() |> 
-              setNames(c("ses.L", "ses.Q", "ses.C", "ses.4", "ses.5")))
+  
+df_poly <- df_all_fix |> 
+  filter(!is.na(ses)) |> 
+  pull(ses) |> 
+  poly(degree = 5) |> 
+  as_tibble() |> 
+  setNames(c("ses.L", "ses.Q", "ses.C", "ses.4", "ses.5"))
+df_all_fix[!is.na(df_all_fix$ses), 
+           c("ses.L", "ses.Q", "ses.C", "ses.4", "ses.5")] <- df_poly
 ses_vals <- df_all_fix |> 
   select(starts_with("ses")) |> 
   distinct() |> 
@@ -486,13 +492,14 @@ mod_str_fix <- mod_str |>
 
 ```{r eval=F}
 mod_sem_fix <- bsem(mod_str_fix, 
-                data = df_all_fix,
-                ordered = c("supervision_accompanied"),
-                parameterization = "theta",
-                n.chains = 4,
-                sample = 6000,
-                seed = 42,
-                bcontrol = list(cores = 4))
+                    data = df_all_fix,
+                    ordered = c("supervision_accompanied"),
+                    parameterization = "theta",
+                    n.chains = 4,
+                    burnin = 1000,
+                    sample = 7000,
+                    seed = 42,
+                    bcontrol = list(cores = 4))
 saveRDS(mod_sem_fix, here("models", "mod_sem_fix.rds"))
 ```
 
