@@ -23,8 +23,8 @@ library(lavaan)
 library(blavaan)
 library(coda)
 
-source("blavaan_helpers.R")
-source("ses_helpers.R")
+source(here("scripts", "blavaan_helpers.R"))
+source(here("scripts", "ses_helpers.R"))
 
 theme_set(theme_classic())
 ```
