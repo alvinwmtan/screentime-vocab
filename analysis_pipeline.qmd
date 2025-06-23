@@ -391,8 +391,12 @@ df_centiles <- df_sum |>
   group_nest(ID, language, form, age, prop_vocab_true) |> 
   mutate(centile = map2_dbl(prop_vocab_true, data, 
                             \(x, y) y$centile[which.min(abs(y$prop_vocab - x))])) |> 
-  select(-data) |> 
-  rename(prop_vocab = prop_vocab_true)
+  select(-data, -language, -form) |> 
+  rename(prop_vocab = prop_vocab_true) |> 
+  group_by(ID, age) |> 
+  summarise(centile = mean(centile, na.rm = TRUE),
+            prop_vocab = mean(prop_vocab, na.rm = TRUE),
+            .groups = "drop")
 ```
 
 ```{r}

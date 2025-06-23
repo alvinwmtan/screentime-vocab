@@ -240,7 +240,7 @@ read_csv(here("data", "demogs.csv"), show_col_types = FALSE) |>
   )
 ```
 
-Among all families, 90% lived in two-parent households, 2.5% in single-parent households, and 12.9% in other arrangements (unknown: 0.4%). Child supervision outside the family was reported by 94.6% of respondents. These children attended daycare (i.e., childcare service, 64.2%), kindergarten (i.e., early education, 17.2%), or were cared for by a nanny/manny (3.9%). The mean number of halfdays of attending daycare was 5.4 (SD = 2.9, range = [0, 14]). Other supervision sources included relatives (39.4%), day parents (4.3%), or school daycare (0.4%). Regarding health, 2.9% of children had a physical illness (e.g., neurodermatitis), and one child (0.4%) had a developmental delay (motor delay).
+Among all families, 90% lived in two-parent households, 2.5% in single-parent households, and 12.9% in other arrangements (unknown: 0.4%). Child supervision outside the family was reported by 94.6% of respondents. These children attended daycare (i.e., childcare service, 64.2%), kindergarten (i.e., early education, 17.2%), or were cared for by a nanny/manny (3.9%). The mean number of half days of attending daycare was 5.4 (SD = 2.9, range = [0, 14]). Other supervision sources included relatives (39.4%), day parents (4.3%), or school daycare (0.4%). Regarding health, 2.9% of children had a physical illness (e.g., neurodermatitis), and one child (0.4%) had a developmental delay (motor delay).
 
 ## Procedure
 
@@ -270,11 +270,11 @@ We also preprocessed our other predictor variables. Age was mean-centered. Gende
 
 ### Causal mediation analysis
 
-To test the validity of the DREAMER framework in this study, we conducted a causal serial mediation analysis using the potential outcomes framework [@imaiGeneralApproachCausal2010; @valeriMediationAnalysisAllowing2013]. We used the `blavaan` package [@merkleBlavaanBayesianStructural2018] to fit a Bayesian structural equation model (SEM) to the data. The SEM was specified with five groups of variables: (1) child-level covariates (age, gender, parental education); (2) structural factors (number of halfdays per week the child attends daycare, number of older siblings); (3) first-level mediators (parental motivations for child screen use); (4) second-level mediators (children’s weekly screen time, whether children use screens while accompanied, parental interaction during screen co-viewing); and (5) outcome (vocabulary percentiles).
+To test the validity of the DREAMER framework in this study, we conducted a causal serial mediation analysis using the potential outcomes framework [@imaiGeneralApproachCausal2010; @valeriMediationAnalysisAllowing2013]. We used the `blavaan` package [@merkleBlavaanBayesianStructural2018] to fit a Bayesian structural equation model (SEM) to the data. The SEM was specified with five groups of variables: (1) child-level covariates (age, gender, parental education); (2) structural factors (number of half days per week the child attends daycare, number of older siblings); (3) first-level mediators (parental motivations for child screen use); (4) second-level mediators (children’s weekly screen time, whether children use screens while accompanied, parental interaction during screen co-viewing); and (5) outcome (vocabulary percentiles).
 
 In the first step of the model, the first-level mediators were predicted by the child-level co-variates and structural factors. In the second step, the second-level mediators were predicted by the first-level mediators, child-level covariates, and structural factors. Finally, in the third step, the outcome was predicted by the second-level mediators, first-level mediators, child-level covariates, and structural factors, as well as interactions between the structural factors and all mediators, and between screen time and all other second-level mediators. A schematic path diagram of the model is shown in Figure 1; parental motivations for child screen use and parental interaction during screen co-viewing variables are named using the results of the factor analyses described in the Results section.
 
-For both structural factors (amount of halfdays of daycare and number of older siblings), we also calculated the pure natural direct effects (PNDEs), total natural direct effects (TNDEs), pure natural indirect effects (PNIEs), total natural direct effects (TNDEs), total natural indirect effects (TNIEs), and total effects (TEs). For the amount of halfdays in daycare, the effects were calculated for one additional half day of daycare per week, and for the number of older siblings, the effects were calculated for one additional older sibling. Reference values for the covariates were the mean age, the zero value for sum-contrasted gender, and the modal value for parental education (corresponding to a bachelor’s degree).
+For both structural factors (amount of half days of daycare and number of older siblings), we also calculated the pure natural direct effects (PNDEs), total natural direct effects (TNDEs), pure natural indirect effects (PNIEs), total natural direct effects (TNDEs), total natural indirect effects (TNIEs), and total effects (TEs). For the amount of half days in daycare, the effects were calculated for one additional half day of daycare per week, and for the number of older siblings, the effects were calculated for one additional older sibling. Reference values for the covariates were the mean age, the zero value for sum-contrasted gender, and the modal value for parental education (corresponding to a bachelor’s degree).
 
 We used weakly informative priors for all parameters: normal priors with mean 0 and standard deviation 10 for all coeﬀicients and intercepts, LKJ priors with uniform density for all covariances, and gamma priors with alpha 1 and beta 0.5 for all variances. We used 4 chains of 8000 iterations each, with the first 1000 iterations discarded as burn-in. Missing data were treated as missing at random; our model employed full information likelihood for estimation.
 
@@ -307,7 +307,7 @@ fa_motivation <- readRDS(here("models", "loadings_motivation.rds")) |>
   fmt_number(decimals = 2) |> 
   data_color(columns = -Item,
              domain = c(-1, 1),
-             palette = "RdBu") |> 
+             palette = "Greys") |> 
   tab_spanner(label = "Factor loadings",
               columns = -Item) |> 
   cols_width(
@@ -334,7 +334,7 @@ fa_interaction <- readRDS(here("models", "loadings_interaction.rds")) |>
   fmt_number(decimals = 2) |> 
   data_color(columns = -Item,
              domain = c(-1, 1),
-             palette = "RdBu") |> 
+             palette = "Greys") |> 
   tab_spanner(label = "Factor loadings",
               columns = -Item) |> 
   cols_width(
@@ -368,11 +368,11 @@ mod_pars <- get_model_parameters(mod_sem_fix) |>
 
 The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`1, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero. Descriptive statistics for all variables included in the model are displayed in Supplementary Material 1.
 
-The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects. The CrI for the total effect of the amount of halfdays of daycare on vocabulary percentiles included zero, as did all direct and indirect effects. Similarly, the CrI for the total effect of the number of older siblings on vocabulary percentiles included zero, as did all direct and indirect effects. These results suggest that neither the number of halfdays the child attends daycare, nor the number of older siblings had a reliable effect on vocabulary percentiles in this sample.
+The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects. The CrI for the total effect of the amount of half days of daycare on vocabulary percentiles included zero, as did all direct and indirect effects. Similarly, the CrI for the total effect of the number of older siblings on vocabulary percentiles included zero, as did all direct and indirect effects. These results suggest that neither the number of half days the child attends daycare, nor the number of older siblings had a reliable effect on vocabulary percentiles in this sample.
 
 ```{r}
 #| label: tbl-overall-effects
-#| tbl-cap: Overall effects of structural factors on vocabulary percentiles, showing posterior means and 95% highest density credible intervals. All estimates are for one additional halfday of daycare per week or one additional older sibling.
+#| tbl-cap: Overall effects of structural factors on vocabulary percentiles, showing posterior means and 95% highest density credible intervals. All estimates are for one additional half day of daycare per week or one additional older sibling.
 
 overall_effects <- mod_pars |> 
   filter(str_detect(label, "E_")) |> 
@@ -382,7 +382,7 @@ overall_effects <- mod_pars |>
   separate_wider_delim(label, delim = "_", names = c("effect", "structural_factor")) |> 
   pivot_wider(names_from = structural_factor,
               values_from = value) |> 
-  setNames(c("Effect", "Number of halfdays of daycare", "Number of older siblings")) |> 
+  setNames(c("Effect", "Number of half days of daycare", "Number of older siblings")) |> 
   gt() |> 
   fmt_markdown(everything())
 
@@ -418,7 +418,7 @@ first_level_med <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_halfdays = "Number of halfdays of daycare",
+    childcare_half days = "Number of half days of daycare",
     num_older_siblings = "Nummber of older siblings"
   )),
   rhs = ifelse(rhs == "", "Intercept", rhs)) |> 
@@ -498,7 +498,7 @@ second_level_med <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_halfdays = "Number of halfdays of daycare",
+    childcare_half days = "Number of half days of daycare",
     num_older_siblings = "Nummber of older siblings",
     motivation_behmgmt = "Motivation: Behavioral mangement",
     motivation_freeing = "Motivation: Freeing parent",
@@ -550,7 +550,7 @@ outcome <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_halfdays = "Intercept/Main effect_Childcare",
+    childcare_half days = "Intercept/Main effect_Childcare",
     num_older_siblings = "Intercept/Main effect_Num older siblings",
     motivation_behmgmt = "Motivation: Behavioral management",
     motivation_freeing = "Motivation: Freeing parent",
@@ -589,7 +589,7 @@ outcome <- mod_pars |>
                        too_few = "align_start") |>
   pivot_wider(names_from = "interaction", values_from = "value") |> 
   select(-lhs) |> 
-  setNames(c("Predictor", "Main effect", "Number of halfdays in daycare effect", "Number of older siblings effect", 
+  setNames(c("Predictor", "Main effect", "Number of half days in daycare effect", "Number of older siblings effect", 
              "Weekly screen time effect")) |> 
   mutate(rownum = seq_along(Predictor)) |> 
   # slice(order(rownum != 8)) |> 
