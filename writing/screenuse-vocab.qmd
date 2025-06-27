@@ -1,6 +1,6 @@
 ---
 title: "From screens to words: Exploring family media ecology and language outcomes in infancy"
-shorttitle: "From screens to words"
+shorttitle: "Family media ecology and language in infancy"
 author:
   - name: Nevena Dimitrova
     corresponding: true
@@ -90,7 +90,7 @@ affiliations:
     country: Switzerland
   - id: usi
     name: Università della Svizzera Italiana (USI)
-    department: Institute of Media and Journalism
+    department: Institute of Media and Journalism (IMeG)
     city: Lugano
     country: Switzerland
   - id: luzern
@@ -112,7 +112,7 @@ author-note:
     related-report: null
     conflict-of-interest: null
     financial-support: null
-    gratitude: "We thank all the parents who completed the SWIPE survey and all institutions that supported distribution of the survey link. This study was financially supported by: Federal Social Insurance Office (BSV), Foundation Action Innocence, Fondation Sana, Haute école de travail social et de la santé Lausanne, HES-SO (HETSL), and Pädagogische Hochschule Thurgau (PHTG). EU was financially supported by the research Fund Junior Researchers of the University of Basel, Grant/Award Number: 3MS1064. None of the funding sources had a role in the study design, analysis of data, interpretation of results, or writing of the report. The authors declare no conflict of interest in the conduct and reporting of research."
+    gratitude: "We thank all the parents who completed the SWIPE survey and all institutions that supported distribution of the survey link. This study was financially supported by: Federal Social Insurance Office (BSV), Foundation Action Innocence, Fondation Sana, Haute école de travail social et de la santé Lausanne, HES-SO (HETSL), and Pädagogische Hochschule Thurgau (PHTG). EU was financially supported by the research Fund Junior Researchers of the University of Basel, Grant/Award Number: 3MS1064. None of the funding sources had a role in the study design, analysis of data, interpretation of results, or writing of the report. The authors declare no conflict of interest in the conduct and reporting of research. Generative Artificial Intelligence was employed to assist with the rephrasing and summarization of written text, with the full approval of all authors."
     authorship-agreements: "Fabio Sticca and Eva Unternaehrer share last authorship."
 abstract: "This study applies the Dynamic, Relational, Ecological Approach to Media Effects Research (DREAMER) framework to investigate how family media ecology associates with early vocabulary development. Drawing on a sample of 279 Swiss families with children aged 8–30 months, we examined how individual (child age, gender), structural (parental education, daycare attendance, siblings), and contextual (parental motivations, co-viewing behaviors) factors shape screen use dynamics and language outcomes. Using a Bayesian structural equation modeling approach, we tested a serial mediation model linking these variables to vocabulary percentiles derived from the MacArthur-Bates Communicative Development Inventory. While structural factors such as daycare attendance and sibling presence did not predict vocabulary outcomes, parental motivations—particularly for learning and behavioral management—were associated with screen use patterns and co-viewing behaviors. However, these contextual factors did not reliably predict vocabulary scores. Our findings highlight the complexity of media effects in early childhood and underscore the importance of considering developmental timing, family context, and parental intent. The results support the DREAMER framework’s emphasis on dynamic, bidirectional processes and call for longitudinal, multi-informant research to better capture the nuanced pathways linking digital media use to developmental outcomes."
 keywords: [early language development, digital media use, parental motivations, family media ecology, DREAMER framework]
@@ -123,9 +123,6 @@ format:
   apaquarto-typst: default
   apaquarto-pdf:
     documentmode: man
-include-in-header: 
-  text: |
-    \usepackage{authblk} 
 ---
 
 ```{r echo=F}
@@ -166,57 +163,114 @@ print_est_ci <- function(est, ci.lower, ci.upper, decimals = 2) {
 }
 ```
 
-Many children under the age of three years are frequent users of digital screen media [@mannunk2025; @schmidDigitalMediaUse2025], despite recommendations against any screen use in young children [@worldhealthorganizationGuidelinesPhysicalActivity2019]. Given the potential undesirable effects of screen time on child development (Sticca et al., 2025), understanding how early screen use influences development, particularly language acquisition, is crucial. While recent studies have examined links between screen time and language development alongside other predictors or moderators [e.g., @bergmannYoungChildrensScreen2022; @xieScreenExposureBeneficial2024], such approaches remain largely fragmented. To better understand how screen use influences development, integrative models are needed that consider the structural, motivational, and contextual pathways involved [@barrEarlyChildhoodDigital2024; @christakisHowEarlyMedia2018; @madiganAssociationScreenTime2019]. This study applies the *Dynamic, Relational, Ecological Approach to Media Effects Research* framework [DREAMER\; @barrEarlyChildhoodDigital2024] to propose a four-step model linking early digital media use to vocabulary development within the broader family media context. Specifically, we investigate how individual and structural factors influence parents’ motivations for allowing child screen use; how, in turn, these motivations relate to young children's screen use patterns; and, ultimately, how early screen exposure is associated with vocabulary development in children under the age of three years.
+# Introduction
+Many children under the age of three years are frequent users of digital screen media [@mannCommonSenseCensus2025; @schmidDigitalMediaUse2025], despite recommendations against any screen use in young children [@worldhealthorganizationGuidelinesPhysicalActivity2019].
+Given the potential undesirable effects of screen time on child development [@sticcaScreenDevelopmentSystematic2025], understanding how early screen use influences development, particularly language acquisition, is crucial.
+While recent studies have examined links between screen time and language development alongside other predictors or moderators [e.g., @bergmannYoungChildrensScreen2022; @xieScreenExposureBeneficial2024], such approaches remain largely fragmented.
+To better understand how screen use influences development, integrative models are needed that consider the structural, motivational, and contextual pathways involved [@barrMediaExposureInfancy2017; @christakisHowEarlyMedia2018; @madiganAssociationScreenTime2019].
+This study applies the *Dynamic, Relational, Ecological Approach to Media Effects Research* framework [DREAMER\; @barrEarlyChildhoodDigital2024] to propose a four-step model linking early digital media use to vocabulary development within the broader family media context.
+Specifically, we investigate how individual and structural factors influence parents’ motivations for allowing child screen use; how, in turn, these motivations relate to young children's screen use patterns; and, ultimately, how early screen exposure is associated with vocabulary development in children under the age of three years.
 
-Understanding how screen-based digital media use impacts infant development is crucial due to the neurodevelopmental sensitivity in early childhood [@christakisEffectsInfantMedia2009] and the growing ubiquity of screens in family life. Early screen‐use habits often persist, underscoring the need for research to inform best practices and policy even in young children [@aapcounciloncommunicationsandmediaMediaYoungMinds2016; @madiganAssociationScreenTime2019]. Of various developmental outcomes, language is particularly vital: It depends on interactive, contingent exchanges that screens typically lack [@roseberrySkypeMeSocially2014; @zimmermanAssociationsMediaViewing2007] and serves as both, a key developmental milestone and a foundation for later cognitive, social, and academic success [@hirsh-pasekPuttingEducationEducational2015].
+Understanding how screen-based digital media use impacts infant development is crucial due to the neurodevelopmental sensitivity in early childhood [@christakisEffectsInfantMedia2009] and the growing ubiquity of screens in family life.
+Early screen‐use habits often persist, underscoring the need for research to inform best practices and policy even in young children [@aapcounciloncommunicationsandmediaMediaYoungMinds2016; @madiganAssociationScreenTime2019].
+Of various developmental outcomes, language is particularly vital: It depends on interactive, contingent exchanges that screens typically lack [@roseberrySkypeMeSocially2014; @zimmermanAssociationsMediaViewing2007] and serves as both a key developmental milestone and a foundation for later cognitive, social, and academic success [@hirsh-pasekPuttingEducationEducational2015].
 
-The use of digital screens in the early years is widespread (Mann et al., 2025) and may displace opportunities for rich, interactive experiences that are foundational to early psychological development [@oswaldPsychologicalImpactsScreen2020]. Studies have reported that children with higher amounts of screen use tend to have lower language abilities, and decreased vocabulary in particular, both when screen use and vocabulary size are measured concurrently [@jingScreenMediaExposure2023; @madiganAssociationScreenTime2019] and longitudinally [@sundqvistLongitudinalStudyRelationship2024].
+The use of digital screens in the early years is widespread [@mannCommonSenseCensus2025] and may displace opportunities for rich, interactive experiences that are foundational to early psychological development [@oswaldPsychologicalImpactsScreen2020].
+Studies have reported that children with higher amounts of screen use tend to have lower language abilities, and decreased vocabulary in particular, both when screen use and vocabulary size are measured concurrently [@jingScreenMediaExposure2023; @madiganAssociationScreenTime2019] and longitudinally [@sundqvistLongitudinalStudyRelationship2024].
 
-Recent research has moved beyond screen time alone, recognizing that it does not fully capture the ways in which screen media influence children's language development. Contemporary research reveals that digital media effects are not uniform but depend critically on individual and structural factors, on digital media dynamics such as parental reasons and motivations for child screen use, as well as on the characteristics of the child’s screen use in terms of the content and the context of screen exposure.
+Recent research has moved beyond screen time alone, recognizing that it does not fully capture the ways in which screen media influence children's language development.
+Contemporary research reveals that digital media effects are not uniform but depend critically on individual and structural factors, on digital media dynamics such as parental reasons and motivations for child screen use, as well as on the characteristics of the child’s screen use in terms of the content and the context of screen exposure.
 
 ## Individual and structural factors shaping screen--language relationships
 
-The relationship between screen use and language development operates within a complex web of individual and structural factors that both predict screen exposure patterns and moderate their developmental impact. Child age serves as a primary predictor of screen exposure, with screen time increasing as children grow older (Mann et al., 2025; [@schmidDigitalMediaUse2025]. Importantly, age also functions as a critical moderator of screen-related risks. Early exposure during toddlerhood (12–30 months) is associated with elevated risks of language delays, while moderate exposure among older toddlers (31–48 months) demonstrates fewer negative associations [@chakhunashviliDoesScreenTime2024]. Regarding gender, although girls typically demonstrate slightly stronger early vocabulary development, excessive screen use negatively impacts language development across genders, particularly when interactive, co-viewed content is absent [@tulvisteWeekendScreenUse2024].
+The relationship between screen use and language development operates within a complex web of individual and structural factors that both predict screen exposure patterns and moderate their developmental impact.
+Child age serves as a primary predictor of screen exposure, with screen time increasing as children grow older [@mannCommonSenseCensus2025; @schmidDigitalMediaUse2025].
+Importantly, age also functions as a critical moderator of screen-related risks.
+Early exposure during toddlerhood (12–30 months) is associated with elevated risks of language delays, while moderate exposure among older toddlers (31–48 months) demonstrates fewer negative associations [@chakhunashviliDoesScreenTime2024].
+Regarding gender, although girls typically demonstrate slightly stronger early vocabulary development, excessive screen use negatively impacts language development across genders, particularly when interactive, co-viewed content is absent [@tulvisteWeekendScreenUse2024].
 
-Structural factors create both direct and indirect pathways to screen-language relationships. Lower-income families report higher levels of screen exposure [@anandDemographicPredictorsMedia2005; @calvertAgeEthnicitySocioeconomic2005], while income also moderates developmental outcomes [@linverFamilyProcessesPathways2002; @schwabLanguageLearningSocioeconomic2016]. Children from lower socioeconomic backgrounds are more likely to experience screen use without enriching caregiver interaction, which can substantially undermine language development [@balExaminingRelationshipLanguage2024]. Similarly, parental education level significantly influences both screen exposure patterns and mediation strategies. For instance, parents with lower educational attainment tend to permit more passive screen use (Mann et al., 2025; Paulus et al., 2023), whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
+Structural factors create both direct and indirect pathways to screen-language relationships.
+Lower-income families report higher levels of screen exposure [@anandDemographicPredictorsMedia2005; @calvertAgeEthnicitySocioeconomic2005], while income also moderates developmental outcomes [@linverFamilyProcessesPathways2002; @schwabLanguageLearningSocioeconomic2016].
+Children from lower socioeconomic backgrounds are more likely to experience screen use without enriching caregiver interaction, which can substantially undermine language development [@balExaminingRelationshipLanguage2024].
+Similarly, parental education level significantly influences both screen exposure patterns and mediation strategies.
+For instance, parents with lower educational attainment tend to permit more passive screen use [@mannCommonSenseCensus2025] Paulus et al., 2023), whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
 
 ## Parental motivations: The hidden driver of language outcomes
 
-Parental motivations underlying child screen use significantly influence language development outcomes, often in ways that contradict intended benefits. Parents commonly report using digital media to keep their child entertained while they are occupied, to take a break from caregiving, or to help regulate their child’s behavior or emotional state [@nikkenParentsInstrumentalUse2019]. When screens serve convenience purposes—such as behavioral management or parental respite—language outcomes potentially suffer due to reduced caregiver–child interaction [@madiganAssociationScreenTime2019]. While some parents emphasize learning and creativity as primary motivations for child screen use [@schmidDigitalMediaUse2025], educational intentions alone do not guarantee improved outcomes without accompanying active co-viewing strategies. Convenience-driven screen use tends to reinforce passive consumption patterns, thus potentially displacing the conversational exchanges essential for language acquisition [@alroqiAssociationScreenMedia2023; @doreCharacteristicsChildrensMedia2020; @strouseEffectiveCoviewingPreschoolers2013]. Importantly, while parental media motivations appear to be a key mediator in the link between child screen use and language outcomes, there is a substantial gap in the literature regarding the factors that predict these motivations.
+Parental motivations underlying child screen use significantly influence language development outcomes, often in ways that contradict intended benefits.
+Parents commonly report using digital media to keep their child entertained while they are occupied, to take a break from caregiving, or to help regulate their child’s behavior or emotional state [@nikkenParentsInstrumentalUse2019].
+When screens serve convenience purposes—such as behavioral management or parental respite—language outcomes potentially suffer due to reduced caregiver–child interaction [@madiganAssociationScreenTime2019].
+While some parents emphasize learning and creativity as primary motivations for child screen use [@schmidDigitalMediaUse2025], educational intentions alone do not guarantee improved outcomes without accompanying active co-viewing strategies.
+Convenience-driven screen use tends to reinforce passive consumption patterns, thus potentially displacing the conversational exchanges essential for language acquisition [@alroqiAssociationScreenMedia2023; @doreCharacteristicsChildrensMedia2020; @strouseEffectiveCoviewingPreschoolers2013].
+Importantly, while parental media motivations appear to be a key mediator in the link between child screen use and language outcomes, there is a substantial gap in the literature regarding the factors that predict these motivations.
 
 ## Media use by the child: What matters beyond screen time
 
-While increased screen time exposure during early childhood generally correlates with lower language abilities [for a meta-analysis, see @xieScreenExposureBeneficial2024], high-quality educational programming can correlate with improved lexical outcomes [@jingScreenMediaExposure2023; @linebargerInfantsToddlersTelevision2005]. Meta-analytic evidence confirms that content explicitly designed for word learning—particularly programs incorporating infant-directed speech and interactive narratives—can foster vocabulary growth [@celenyoldasCommunicativeEnvironmentalFactors2021; @jingScreenMediaExposure2023; @madiganAssociationScreenTime2019].
+While increased screen time exposure during early childhood generally correlates with lower language abilities [for a meta-analysis, see @xieScreenExposureBeneficial2024], high-quality educational programming can correlate with improved lexical outcomes [@jingScreenMediaExposure2023; @linebargerInfantsToddlersTelevision2005].
+Meta-analytic evidence confirms that content explicitly designed for word learning—particularly programs incorporating infant-directed speech and interactive narratives—can foster vocabulary growth [@celenyoldasCommunicativeEnvironmentalFactors2021; @jingScreenMediaExposure2023; @madiganAssociationScreenTime2019].
 
-The social context surrounding screen use emerges as equally important as content quality; child solitary media use may negatively impact language development due to the lack of contingent interaction essential for young children's learning [@doreCharacteristicsChildrensMedia2020]. In contrast, when parents accompany children during screen use, opportunities for meaningful engagement multiply. Drawing from the joint attention literature, which demonstrates that shared focus between parent and child facilitates language learning [@adamsonJointAttentionLanguage2014], co-viewing can create fertile ground for parent–child interaction. Active parental engagement—termed joint media engagement (JME)—includes naming elements from the screen, pointing to specific features, explaining content, asking questions, and following up on viewed material during subsequent activities. Research supports the language-enhancing potential of JME: such active engagement increases adult-child conversations, creating new opportunities for early word learning [@alroqiAssociationScreenMedia2023; @strouseEffectiveCoviewingPreschoolers2013]. Lavigne and colleagues [-@lavigneInfluenceTelevisionCoviewing2015] found that parents included more new words per utterance during co-viewing, with this enhanced vocabulary input continuing beyond the viewing session and enriching subsequent free-play interactions. These findings reinforce the growing consensus that media effects are neither monolithic nor inevitable but are contingent upon contextual variables that either inhibit or scaffold learning.
+The social context surrounding screen use emerges as equally important as content quality; child solitary media use may negatively impact language development due to the lack of contingent interaction essential for young children's learning [@doreCharacteristicsChildrensMedia2020].
+In contrast, when parents accompany children during screen use, opportunities for meaningful engagement multiply.
+Drawing from the joint attention literature, which demonstrates that shared focus between parent and child facilitates language learning [@adamsonJointAttentionLanguage2014], co-viewing can create fertile ground for parent–child interaction.
+Active parental engagement—termed joint media engagement (JME)—includes naming elements from the screen, pointing to specific features, explaining content, asking questions, and following up on viewed material during subsequent activities.
+Research supports the language-enhancing potential of JME: such active engagement increases adult-child conversations, creating new opportunities for early word learning [@alroqiAssociationScreenMedia2023; @strouseEffectiveCoviewingPreschoolers2013].
+Lavigne and colleagues [-@lavigneInfluenceTelevisionCoviewing2015] found that parents included more new words per utterance during co-viewing, with this enhanced vocabulary input continuing beyond the viewing session and enriching subsequent free-play interactions.
+These findings reinforce the growing consensus that media effects are neither monolithic nor inevitable but are contingent upon contextual variables that either inhibit or scaffold learning.
 
-Taken together, the evidence suggests that evolution of early childhood media research has progressed beyond traditional screen time measures, revealing the need for more sophisticated, multi-dimensional models to understand how digital media influence developmental outcomes, including language [@doreDigitalMediaUse2025]. While substantial progress has been made in moving beyond screentime measures to examine how content and context shape language learning, current evidence remains inconclusive. In order to capture the multifaceted nature of how screen use impacts young children’s language development, there is a critical need for more integrative theoretical frameworks.
+Taken together, the evidence suggests that evolution of early childhood media research has progressed beyond traditional screen time measures, revealing the need for more sophisticated, multi-dimensional models to understand how digital media influence developmental outcomes, including language [@doreDigitalMediaUse2025].
+While substantial progress has been made in moving beyond screentime measures to examine how content and context shape language learning, current evidence remains inconclusive.
+In order to capture the multifaceted nature of how screen use impacts young children’s language development, there is a critical need for more integrative theoretical frameworks.
 
 ## DREAMER framework
 
-To address these limitations and unify fragmented theoretical strands, the *Dynamic, Relational, Ecological Approach to Media Effects Research* framework [DREAMER\; @barrEarlyChildhoodDigital2024] was developed as an integrated developmental and family systems approach. It synthesizes insights from prior theories, particularly the Differential Susceptibility to Media Effects Model [DSMM\; @valkenburgDifferentialSusceptibilityMedia2013], the Interactional Theory of Childhood Problematic Media Use [@domoffInteractionalTheoryChildhood2020], and the Uses and Gratifications framework [@rubinUsesGratificationsMedia2009], while addressing their limitations and expanding their scope. In contrast to DSMM’s macro-level treatment of media as a distal environmental influence, DREAMER reconceptualizes digital media as a proximal context that directly shapes the parent–child microsystem. Drawing on Bronfenbrenner and Morris’s [-@bronfenbrennerBioecologicalModelHuman2007] ecological model and Sameroff’s [-@sameroffUnifiedTheoryDevelopment2010] transactional perspective, it posits that media effects emerge through iterative, bidirectional interactions that reflect the reciprocal nature of family dynamics.
+To address these limitations and unify fragmented theoretical strands, the *Dynamic, Relational, Ecological Approach to Media Effects Research* framework [DREAMER\; @barrEarlyChildhoodDigital2024] was developed as an integrated developmental and family systems approach.
+It synthesizes insights from prior theories, particularly the Differential Susceptibility to Media Effects Model [DSMM\; @valkenburgDifferentialSusceptibilityMedia2013], the Interactional Theory of Childhood Problematic Media Use [@domoffInteractionalTheoryChildhood2020], and the Uses and Gratifications framework [@rubinUsesGratificationsMedia2009], while addressing their limitations and expanding their scope.
+In contrast to DSMM’s macro-level treatment of media as a distal environmental influence, DREAMER reconceptualizes digital media as a proximal context that directly shapes the parent–child microsystem.
+Drawing on Bronfenbrenner and Morris’s [-@bronfenbrennerBioecologicalModelHuman2007] ecological model and Sameroff’s [-@sameroffUnifiedTheoryDevelopment2010] transactional perspective, it posits that media effects emerge through iterative, bidirectional interactions that reflect the reciprocal nature of family dynamics.
 
-The DREAMER framework builds upon existing theories by considering the entire family media ecology, capturing both the direct effects of digital media on children and the indirect effects that emerge from family dynamics—such as how technoference may reduce parent–child interactions, whereas joint media engagement may enhance them. The framework focuses on the dynamic interplay between the characteristics of children and parents, the motivations behind media use, and the design features of media. It acknowledges digital media as both a resource and a risk. These interactions unfold across multiple timescales—from momentary uses (e.g., soothing a child), to short-term consequences (e.g., reduced caregiver–child verbal interaction), and long-term outcomes (e.g., vocabulary development). Moreover, the model highlights the diversity and contextual variability of parental motivations—ranging from educational goals to emotional regulation or personal respite—shaped by broader structural factors such as socioeconomic status, access to childcare, and housing conditions.
+The DREAMER framework builds upon existing theories by considering the entire family media ecology, capturing both the direct effects of digital media on children and the indirect effects that emerge from family dynamics—such as how technoference may reduce parent–child interactions, whereas joint media engagement may enhance them.
+The framework focuses on the dynamic interplay between the characteristics of children and parents, the motivations behind media use, and the design features of media.
+It acknowledges digital media as both a resource and a risk.
+These interactions unfold across multiple timescales—from momentary uses (e.g., soothing a child), to short-term consequences (e.g., reduced caregiver–child verbal interaction), and long-term outcomes (e.g., vocabulary development).
+Moreover, the model highlights the diversity and contextual variability of parental motivations—ranging from educational goals to emotional regulation or personal respite—shaped by broader structural factors such as socioeconomic status, access to childcare, and housing conditions.
 
 ## Present study
 
-Most research on child screen use and language development overlooks the broader family media ecology in which screen behaviors are embedded. Although recent studies have begun to include predictors or moderators, their approaches remain largely limited to bivariate analyses [@andersonScreenMediaParent2017; @barrEarlyChildhoodDigital2024; @bergmannYoungChildrensScreen2022; @xieScreenExposureBeneficial2024].
+Most research on child screen use and language development overlooks the broader family media ecology in which screen behaviors are embedded.
+Although recent studies have begun to include predictors or moderators, their approaches remain largely limited to bivariate analyses [@andersonScreenMediaParent2017; @barrEarlyChildhoodDigital2024; @bergmannYoungChildrensScreen2022; @xieScreenExposureBeneficial2024].
 
-The present study suggests to rely on an integrative model that accounts for the structural, motivational, and screen dynamics pathways through which digital media shapes children’s language acquisition [@barrMediaExposureInfancy2017; @christakisHowEarlyMedia2018; @madiganAssociationScreenTime2019]. It provides an operationalization of the DREAMER framework principles to propose a four-step model that aims for a comprehensive account of how early digital screen use is linked to vocabulary development within the broader family media ecology. More specifically, this study aims to examine the interplay of child individual and structural factors, parental motivations for child screen use, child screen use characteristics and vocabulary abilities of infants and toddlers (@fig-sem) with regard to child vocabulary skills. Although previous research has identified associations among several of the variables in the model, the present study remains largely exploratory. Given the conceptual model’s complexity, we do not advance specific hypotheses.
+The present study suggests relying on an integrative model that accounts for the structural, motivational, and screen dynamics pathways through which digital media shapes children’s language acquisition [@barrMediaExposureInfancy2017; @christakisHowEarlyMedia2018; @madiganAssociationScreenTime2019].
+It provides an operationalization of the DREAMER framework principles to propose a four-step model that aims for a comprehensive account of how early digital screen use is linked to vocabulary development within the broader family media ecology.
+More specifically, this study aims to examine the interplay of child individual and structural factors, parental motivations for child screen use, child screen use characteristics and vocabulary abilities of infants and toddlers (@fig-sem) with regard to child vocabulary skills.
+Although previous research has identified associations among several of the variables in the model, the present study remains largely exploratory.
+Given the conceptual model’s complexity, we do not advance specific hypotheses.
 
 ::: {#fig-sem}
 ![](figs/screenuse_sem.png)
 
-Schematic path diagram of the conceptual model for studying the interplay of family digital media ecology and child vocabulary. Arrows connecting one group of variables to another indicate that all variables in the first group are used to predict all variables in the second group. Dashed lines indicate moderation effects.
+Schematic path diagram of the conceptual model for studying the interplay of family digital media ecology and child vocabulary.
+Arrows connecting one group of variables to another indicate that all variables in the first group are used to predict all variables in the second group.
+Dashed lines indicate moderation effects.
 :::
 
 # Method
 
 ## Sample
 
-This study was a spin-off of a broader study on child screen use [Swiss Preschool Screen Exposure, SWIPE\; @schmidDigitalMediaUse2025]. Participants in that study were assigned randomly to one spin-off among eight possible spin-offs. The sample size for this study was constrained by the number of participants assigned to this spin-off and by the age range of the vocabulary assessment tool (8–30 months). Participants were recruited through a combined offline and online strategy to ensure broad outreach across all Swiss cantons. Recruitment materials were available in the three main languages spoken in Switzerland (German, French, Italian) and English. Offline recruitment included mailing printed posters and flyers for display in daycare centers, early childhood organizations, municipalities, midwives, and pediatric offices. Online recruitment complemented these efforts through targeted emails and phone calls to daycare directors and early childhood organizations, as well as outreach via Facebook, Instagram, and blogs. The goal was to recruit the largest possible sample, to be as representative as possible in terms of parental educational level, and to be evenly distributed across the seasons of the year. Given our aim to collect a large and informative sample for descriptive purposes, we adopted a flexible data collection approach without a predefined stopping rule or prior power analysis.
+This study was a spin-off of a broader study on child screen use [Swiss Preschool Screen Exposure, SWIPE\; @schmidDigitalMediaUse2025].
+Participants in that study were assigned randomly to one spin-off among eight possible spin-offs.
+The sample size for this study was constrained by the number of participants assigned to this spin-off and by the age range of the vocabulary assessment tool (8–30 months).
+Participants were recruited through a combined offline and online strategy to ensure broad outreach across all Swiss cantons.
+Recruitment materials were available in the three main languages spoken in Switzerland (German, French, Italian) and English.
+Offline recruitment included mailing printed posters and flyers for display in daycare centers, early childhood organizations, municipalities, midwives, and pediatric offices.
+Online recruitment complemented these efforts through targeted emails and phone calls to daycare directors and early childhood organizations, as well as outreach via Facebook, Instagram, and blogs.
+The goal was to recruit the largest possible sample, to be as representative as possible in terms of parental educational level, and to be evenly distributed across the seasons of the year.
+Given our aim to collect a large and informative sample for descriptive purposes, we adopted a flexible data collection approach without a predefined stopping rule or prior power analysis.
 
-A total of 279 parents of children aged 8–30 months participated in the present study (see @tbl-demographics for demographic information). Inclusion criteria were: (1) having a child aged 8–30 months, (2) parental age between 16–65 years, (3) residing in Switzerland according to postal code, (4) providing any data on child digital device present or used, and (5) understanding German, French, Italian, or English. Exclusion criteria included: (1) not consenting to participate, (2) giving multiple implausible responses (e.g., partner age older than 90 years, inappropriate open text answers), or (3) suspected duplicate participation. For more detailed information on the study see Schmid and colleagues (citation).
+A total of 279 parents of children aged 8–30 months participated in the present study (see @tbl-demographics for demographic information).
+Inclusion criteria were: (1) having a child aged 8–30 months, (2) parental age between 16–65 years, (3) residing in Switzerland according to postal code, (4) providing any data on child digital device present or used, and (5) understanding German, French, Italian, or English.
+Exclusion criteria included: (1) not consenting to participate, (2) giving multiple implausible responses (e.g., partner age older than 90 years, inappropriate open text answers), or (3) suspected duplicate participation.
+For more detailed information on the study see Schmid and colleagues (citation).
 
 ```{r}
 #| label: tbl-demographics
@@ -237,24 +291,77 @@ read_csv(here("data", "demogs.csv"), show_col_types = FALSE) |>
     fn = function(x) {
       map(x, md)
     }
+  ) |> 
+  tab_footnote(
+    footnote = "Parents selected from the following language options: (Swiss) German, French, Italian, Romansh, and English, with multiple answers possible.",
+    locations = cells_row_groups(groups = "**Child first language**")
+  ) |> 
+  tab_footnote(
+    footnote = "Non-binary, third gender, gender-fluid, two-spirit, something else.",
+    locations = cells_stub(rows = "Diverse")
+  ) |> 
+  tab_footnote(
+    footnote = "Baccalaureate schools, Specialized Baccalaureate, Upper secondary specialized schools, Vocational education and training, Vocational education and training (Apprenticeship), FVB, Federal Vet Diploma.",
+    locations = cells_stub(rows = "Matura degree")
+  ) |> 
+  tab_footnote(
+    footnote = "College of Higher Education Diploma, Universities of Applied Sciences, Universities of Teacher Education, Universities incl. Federal Institutes of Technology.",
+    locations = cells_stub(rows = "College degree")
+  ) |> 
+  tab_footnote(
+    footnote = "Bachelor's degree, College of Higher Education Diploma, Federal Diploma of Higher Education.",
+    locations = cells_stub(rows = "Bachelor's degree")
+  ) |> 
+  tab_footnote(
+    footnote = "Master's, Advanced Federal Diploma of Higher Education.",
+    locations = cells_stub(rows = "Master's degree")
+  ) |> 
+  tab_footnote(
+    footnote = "For employment category examples, see the full survey on OSF (https://osf.io/kd3b7).",
+    locations = cells_row_groups(groups = "**Parent employment category**")
   )
 ```
 
-Among all families, 90% lived in two-parent households, 2.5% in single-parent households, and 12.9% in other arrangements (unknown: 0.4%). Child supervision outside the family was reported by 94.6% of respondents. These children attended daycare (i.e., childcare service, 64.2%), kindergarten (i.e., early education, 17.2%), or were cared for by a nanny/manny (3.9%). The mean number of half days of attending daycare was 5.4 (SD = 2.9, range = [0, 14]). Other supervision sources included relatives (39.4%), day parents (4.3%), or school daycare (0.4%). Regarding health, 2.9% of children had a physical illness (e.g., neurodermatitis), and one child (0.4%) had a developmental delay (motor delay).
+Among all families, 90% lived in two-parent households, 2.5% in single-parent households, and 12.9% in other arrangements (unknown: 0.4%).
+Child supervision outside the family was reported by 94.6% of respondents.
+These children attended daycare (i.e., childcare service, 64.2%), kindergarten (i.e., early education, 17.2%), or were cared for by a nanny/manny (3.9%).
+The mean number of half days of attending daycare was 5.4 (SD = 2.9, range = [0, 14]).
+Other supervision sources included relatives (39.4%), day parents (4.3%), or school daycare (0.4%).
+Regarding health, 2.9% of children had a physical illness (e.g., neurodermatitis), and one child (0.4%) had a developmental delay (motor delay).
 
 ## Procedure
 
-Data were collected through an online survey hosted by Qualtrics XM (survey available at <https://osf.io/kd3b7>. Parents who were interested in participating in the study accessed the online survey via a link or QR code displayed on recruitment materials. Data were collected between February 1, 2023, and May 31, 2024. A welcome page provided the aims of the study, explained what participation in the study consisted of, that the study could be completed anonymously, and gave contact information of the study personnel. Parental informed consent was requested to proceed to the survey. The first part of the survey consisted of a core questionnaire that collected demographic information and child digital media (DM) usage for all participants. The second part consisted of eight spin-offs, one of which was focused on assessing language skills in young children. Parents from the current study have been randomly assigned to the language spinoff. Completion of the survey took about 30-45 minutes.
+Data were collected through an online survey hosted by Qualtrics XM (survey available at <https://osf.io/kd3b7>).
+Parents who were interested in participating in the study accessed the online survey via a link or QR code displayed on recruitment materials.
+Data were collected between February 1, 2023, and May 31, 2024.
+A welcome page provided the aims of the study, explained what participation in the study consisted of, that the study could be completed anonymously, and gave contact information of the study personnel.
+Parental informed consent was requested to proceed to the survey.
+The first part of the survey consisted of a core questionnaire that collected demographic information and child digital media (DM) usage for all participants.
+The second part consisted of eight spin-offs, one of which was focused on assessing language skills in young children.
+Parents from the current study have been randomly assigned to the language spinoff.
+Completion of the survey took about 30-45 minutes.
 
-The study was approved by the Cantonal Ethics Committee Zurich, Switzerland (statement of non-responsibility). Participants were offered to sign up for a lottery to win one of 30 x CHF 100 gift vouchers using a second form hosted on an independent Qualtrics XM account.
+The study was approved by the Cantonal Ethics Committee Zurich, Switzerland (statement of non-responsibility).
+Participants were offered to sign up for a lottery to win one of 30 x CHF 100 gift vouchers using a second form hosted on an independent Qualtrics XM account.
 
 ## Measures
 
-The core questionnaire, adapted from the broader SWIPE study [@schmidDigitalMediaUse2025], comprised 48 items across two main sections: demographic information and child DM use. The demographic section included detailed questions about the responding parent, the child’s other parent, household structure, and child characteristics (e.g., age, gender, health, supervision, and language background). The DM section assessed four key dimensions: device accessibility, usage duration, content characteristics, and usage context.
+The core questionnaire, adapted from the broader SWIPE study [@schmidDigitalMediaUse2025], comprised 48 items across two main sections: demographic information and child DM use.
+The demographic section included detailed questions about the responding parent, the child’s other parent, household structure, and child characteristics (e.g., age, gender, health, supervision, and language background).
+The DM section assessed four key dimensions: device accessibility, usage duration, content characteristics, and usage context.
 
-Device accessibility was measured by asking parents which digital devices were present in the household and whether their child had used them. For usage duration, parents estimated average daily time spent on various DM activities (e.g., video watching, app use, audio listening) across weekdays and weekends, with implausible values excluded during preprocessing. Content characteristics were rated using Likert scales and included dimensions such as educational value, emotional themes, prosocial behavior, and language exposure. Contextual factors included parental motivations for screen use, co-viewing behaviors, and the timing of media use throughout the day. Notably, the questionnaire captured general caregiver perceptions rather than context-specific (e.g., home vs. daycare) media use. For a comprehensive description of the survey design and item development, see Schmid and colleagues [-@schmidDigitalMediaUse2025].
+Device accessibility was measured by asking parents which digital devices were present in the household and whether their child had used them.
+For usage duration, parents estimated average daily time spent on various DM activities (e.g., video watching, app use, audio listening) across weekdays and weekends, with implausible values excluded during preprocessing.
+Content characteristics were rated using Likert scales and included dimensions such as educational value, emotional themes, prosocial behavior, and language exposure.
+Contextual factors included parental motivations for screen use, co-viewing behaviors, and the timing of media use throughout the day.
+Notably, the questionnaire captured general caregiver perceptions rather than context-specific (e.g., home vs. daycare) media use.
+For a comprehensive description of the survey design and item development, see Schmid and colleagues [-@schmidDigitalMediaUse2025].
 
-Language abilities of children were assessed with the full version of the MacArthur-Bates Communicative Development Inventory [CDI\; @fensonMacArthurBatesCommunicativeDevelopment2007], which was available to the study participants in either German, French, Italian, or English depending on the preferred language by the parent. The CDI is a standardized parent-report questionnaire designed to assess early language development in infants and toddlers. Depending on the version used (e.g., Words and Gestures for children aged 8–18 months or Words and Sentences for children aged 16–30 months), it captures vocabulary comprehension and production, gesture use, and early grammatical abilities. Parents completed the inventory by indicating which words or gestures their child understands and/or produces, offering a reliable and developmentally sensitive measure of communicative milestones in the 8- to 30-month age range. Based on the vocabulary items, the CDI allows one to generate a total vocabulary score that was converted to a percentile score depending on the child's age (see next section).
+Language abilities of children were assessed with the full version of the MacArthur-Bates Communicative Development Inventory [CDI\; @fensonMacArthurBatesCommunicativeDevelopment2007], which was available to the study participants in either German, French, Italian, or English depending on the preferred language by the parent.
+The CDI is a standardized parent-report questionnaire designed to assess early language development in infants and toddlers.
+Depending on the version used (e.g., Words and Gestures for children aged 8–18 months or Words and Sentences for children aged 16–30 months), it captures vocabulary comprehension and production, gesture use, and early grammatical abilities.
+Parents completed the inventory by indicating which words or gestures their child understands and/or produces, offering a reliable and developmentally sensitive measure of communicative milestones in the 8- to 30-month age range.
+Based on the vocabulary items, the CDI allows one to generate a total vocabulary score that was converted to a percentile score depending on the child's age (see next section).
 
 ## Data analysis
 
@@ -262,21 +369,48 @@ To analyze the data, we first prepared the data by conducting factor analysis on
 
 ### Data preprocessing
 
-To prepare the data for analysis, we first conducted exploratory factor analysis on parental motivations for child screen use, and parent–child interactions during co-viewing of screens. For both groups, we used parallel analysis [@hornRationaleTestNumber1965] to determine the number of factors to extract. We used the `psych` package [@revellePsychProceduresPsychological2025] to perform factor analysis on each group separately with varimax rotation, using the latent factor scores as variables in our analysis.
+To prepare the data for analysis, we first conducted exploratory factor analysis on parental motivations for child screen use, and parent–child interactions during co-viewing of screens.
+For both groups, we used parallel analysis [@hornRationaleTestNumber1965] to determine the number of factors to extract.
+We used the `psych` package [@revellePsychProceduresPsychological2025] to perform factor analysis on each group separately with varimax rotation, using the latent factor scores as variables in our analysis.
 
-To convert the CDI vocabulary scores to percentiles, we obtained data for the relevant CDI instruments from Wordbank [@frankWordbankOpenRepository2017], accessed using the `wordbankr` package [@braginskyWordbankrAccessingWordbank2022]. We included all data from monolinguals, using expressive vocabulary scores for Words & Sentences forms (16–30 months) and receptive vocabulary scores for Words & Gestures forms (8–16 months); these scores were converted into proportions of the maximum score for each form. Following previous work [@marchmanMacArthurBatesCommunicativeDevelopment2023], we then fit the vocabulary proportions using generalised additive models for location, shape, and scale [GAMLSS\; @stasinopoulosFlexibleRegressionSmoothing2017] with a beta distribution, using the `gamlss` package [@stasinopoulosGamlssGeneralizedAdditive2024]. The models included monotonic P-splines for age for both location and scale, with a smoothing parameter of 10000. We also included random effects for child when there were longitudinal data. The fitted models were used to estimate vocabulary percentiles for each child, which we used as the outcome variable in our analysis.
+To convert the CDI vocabulary scores to percentiles, we obtained data for the relevant CDI instruments from Wordbank [@frankWordbankOpenRepository2017], accessed using the `wordbankr` package [@braginskyWordbankrAccessingWordbank2022].
+We included all data from monolinguals, using expressive vocabulary scores for Words & Sentences forms (16–30 months) and receptive vocabulary scores for Words & Gestures forms (8–16 months); these scores were converted into proportions of the maximum score for each form.
+Following previous work [@marchmanMacArthurBatesCommunicativeDevelopment2023], we then fit the vocabulary proportions using generalised additive models for location, shape, and scale [GAMLSS\; @stasinopoulosFlexibleRegressionSmoothing2017] with a beta distribution, using the `gamlss` package [@stasinopoulosGamlssGeneralizedAdditive2024].
+The models included monotonic P-splines for age for both location and scale, with a smoothing parameter of 10000.
+We also included random effects for child when there were longitudinal data (i.e., children who contributed to Wordbank at multiple time points).
+The fitted models were used to estimate vocabulary percentiles for each child, which we used as the outcome variable in our analysis.
+Four parents filled in CDIs in two languages for their children (indicating that they considered their child to have two first languages); we averaged the vocabulary percentiles for these children.
 
-We also preprocessed our other predictor variables. Age was mean-centered. Gender was treated as a binary variable with sum contrasts (male $= - 0.5$, female $= 0.5$). Parental education was treated as an ordinal variable with polynomial contrasts. Whether children were accompanied during screen use (i.e., co-viewing) was treated as a binary variable.
+We also preprocessed our other predictor variables.
+Age was mean-centered.
+Gender was treated as a binary variable with sum contrasts (male $= - 0.5$, female $= 0.5$).
+Parental education was treated as an ordinal variable with polynomial contrasts.
+Whether children were accompanied during screen use (i.e., co-viewing) was treated as a binary variable.
 
 ### Causal mediation analysis
 
-To test the validity of the DREAMER framework in this study, we conducted a causal serial mediation analysis using the potential outcomes framework [@imaiGeneralApproachCausal2010; @valeriMediationAnalysisAllowing2013]. We used the `blavaan` package [@merkleBlavaanBayesianStructural2018] to fit a Bayesian structural equation model (SEM) to the data. The SEM was specified with five groups of variables: (1) child-level covariates (age, gender, parental education); (2) structural factors (number of half days per week the child attends daycare, number of older siblings); (3) first-level mediators (parental motivations for child screen use); (4) second-level mediators (children’s weekly screen time, whether children use screens while accompanied, parental interaction during screen co-viewing); and (5) outcome (vocabulary percentiles).
+To test the validity of the DREAMER framework in this study, we conducted a causal serial mediation analysis using the potential outcomes framework [@imaiGeneralApproachCausal2010; @valeriMediationAnalysisAllowing2013].
+We used the `blavaan` package [@merkleBlavaanBayesianStructural2018] to fit a Bayesian structural equation model (SEM) to the data.
+The SEM was specified with five groups of variables: (1) individual-level covariates (age, gender, parental education); (2) structural factors (number of half days per week the child attends daycare, number of older siblings); (3) first-level mediators (parental motivations for child screen use); (4) second-level mediators (children’s weekly screen time, whether children use screens while accompanied, parental interaction during screen co-viewing); and (5) outcome (vocabulary percentiles).
 
-In the first step of the model, the first-level mediators were predicted by the child-level co-variates and structural factors. In the second step, the second-level mediators were predicted by the first-level mediators, child-level covariates, and structural factors. Finally, in the third step, the outcome was predicted by the second-level mediators, first-level mediators, child-level covariates, and structural factors, as well as interactions between the structural factors and all mediators, and between screen time and all other second-level mediators. A schematic path diagram of the model is shown in Figure 1; parental motivations for child screen use and parental interaction during screen co-viewing variables are named using the results of the factor analyses described in the Results section.
+In the first step of the model, the first-level mediators were predicted by the individual-level covariates and structural factors.
+In the second step, the second-level mediators were predicted by the first-level mediators, individual-level covariates, and structural factors.
+Finally, in the third step, the outcome was predicted by the second-level mediators, first-level mediators, individual-level covariates, and structural factors, as well as interactions between the structural factors and all mediators, and between screen time and all other second-level mediators.
+A schematic path diagram of the model is shown in Figure 1.
 
-For both structural factors (amount of half days of daycare and number of older siblings), we also calculated the pure natural direct effects (PNDEs), total natural direct effects (TNDEs), pure natural indirect effects (PNIEs), total natural direct effects (TNDEs), total natural indirect effects (TNIEs), and total effects (TEs). For the amount of half days in daycare, the effects were calculated for one additional half day of daycare per week, and for the number of older siblings, the effects were calculated for one additional older sibling. Reference values for the covariates were the mean age, the zero value for sum-contrasted gender, and the modal value for parental education (corresponding to a bachelor’s degree).
+For both structural factors (amount of half days of daycare and number of older siblings), we also calculated the pure natural direct effects (PNDEs), total natural direct effects (TNDEs), pure natural indirect effects (PNIEs), total natural indirect effects (TNIEs), and total effects (TEs).[^causal_fx]
+For the amount of half days in daycare, the effects were calculated for one additional half day of daycare per week, and for the number of older siblings, the effects were calculated for one additional older sibling.
+Reference values for the covariates were the mean age, the zero value for sum-contrasted gender, and the modal value for parental education (corresponding to a bachelor’s degree).
 
-We used weakly informative priors for all parameters: normal priors with mean 0 and standard deviation 10 for all coeﬀicients and intercepts, LKJ priors with uniform density for all covariances, and gamma priors with alpha 1 and beta 0.5 for all variances. We used 4 chains of 8000 iterations each, with the first 1000 iterations discarded as burn-in. Missing data were treated as missing at random; our model employed full information likelihood for estimation.
+[^causal_fx]: The PNDE is the direct effect of the predictor on the outcome if the mediator were held at its control value. 
+The TNDE is the direct effect of the predictor on the outcome if the mediator were held at its treatment value. 
+The PNIE is the indirect effect of the predictor on the outcome via the mediator, if the predictor were held at its control value. 
+The TNIE is the indirect effect of the predictor on the outcome via the mediator, if the predictor were held at its treatment value. 
+The total effect is the overall effect of the predictor on the outcome, and is equal to PNDE + TNIE or TNDE + PNIE.
+
+We used weakly informative priors for all parameters: normal priors with mean 0 and standard deviation 10 for all coeﬀicients and intercepts, LKJ priors with uniform density for all covariances, and gamma priors with alpha 1 and beta 0.5 for all variances.
+We used 4 chains of 8000 iterations each, with the first 1000 iterations discarded as burn-in.
+Missing data were treated as missing at random; our model employed full information likelihood for estimation.
 
 # Results
 
@@ -289,11 +423,17 @@ df_data_vars <- tibble(
 )
 ```
 
-We first report the results of the factor analyses of our mediators, followed by the overall effects of the structural factors on CDI percentiles in our causal mediation analysis. We then investigate the components of our causal mediation analysis to further understand the relationship among our variables of interest.
+We first report the results of the factor analyses of our mediators, followed by the overall effects of the structural factors on CDI percentiles in our causal mediation analysis.
+We then investigate the components of our causal mediation analysis to further understand the relationship among our variables of interest.
 
 ## Factor analyses
 
-For parental motivations for letting children use screens, parallel analysis suggested a four-factor solution. Factor loadings for each of the parental motivation items are shown in @tbl-fa-motivation. The first factor is related to child behavioral management, involving items relating to modifying the child’s behavior. The second factor is related to occupying the child so as to free up time for the parent to do other tasks or to reduce parents’ stress. The third factor is related to screen use as a means of learning, whether it be learning facts, languages, or about the digital world itself. The fourth factor is related to emotion regulation of the child, including items relating to calming the child down and reducing their anger.
+For parental motivations for letting children use screens, parallel analysis suggested a four-factor solution.
+Factor loadings for each of the parental motivation items are shown in @tbl-fa-motivation.
+The first factor is related to child behavioral management, involving items relating to modifying the child’s behavior.
+The second factor is related to occupying the child so as to free up time for the parent to do other tasks or to reduce parents’ stress.
+The third factor is related to screen use as a means of learning, whether it be learning facts, languages, or about the digital world itself.
+The fourth factor is related to emotion regulation of the child, including items relating to calming the child down and reducing their anger.
 
 ```{r}
 #| label: tbl-fa-motivation
@@ -307,7 +447,7 @@ fa_motivation <- readRDS(here("models", "loadings_motivation.rds")) |>
   fmt_number(decimals = 2) |> 
   data_color(columns = -Item,
              domain = c(-1, 1),
-             palette = "Greys") |> 
+             palette = "RdBu") |> 
   tab_spanner(label = "Factor loadings",
               columns = -Item) |> 
   cols_width(
@@ -319,7 +459,11 @@ fa_motivation <- readRDS(here("models", "loadings_motivation.rds")) |>
 fa_motivation
 ```
 
-For parental interactions during screen co-viewing, parallel analysis suggested a three-factor solution. Factor loadings for each of the parental interaction items are shown in @tbl-fa-interaction. The first factor is related to the parent drawing in other information by expanding on content, reinforcing ideas, or relating content to other ideas. The second factor is related to the parent focusing the child’s attention on the content by commenting, naming, or pointing to aspects of the content. The third factor is related to the parent asking questions about the content, including asking about what is happening or asking the child to name aspects of the content.
+For parental interactions during screen co-viewing, parallel analysis suggested a three-factor solution.
+Factor loadings for each of the parental interaction items are shown in @tbl-fa-interaction.
+The first factor is related to the parent drawing in other information by expanding on content, reinforcing ideas, or relating content to other ideas.
+The second factor is related to the parent focusing the child’s attention on the content by commenting, naming, or pointing to aspects of the content.
+The third factor is related to the parent asking questions about the content, including asking about what is happening or asking the child to name aspects of the content.
 
 ```{r}
 #| label: tbl-fa-interaction
@@ -334,7 +478,7 @@ fa_interaction <- readRDS(here("models", "loadings_interaction.rds")) |>
   fmt_number(decimals = 2) |> 
   data_color(columns = -Item,
              domain = c(-1, 1),
-             palette = "Greys") |> 
+             palette = "RdBu") |> 
   tab_spanner(label = "Factor loadings",
               columns = -Item) |> 
   cols_width(
@@ -366,9 +510,12 @@ mod_pars <- get_model_parameters(mod_sem_fix) |>
   left_join(mod_est, by = join_by(label == var))
 ```
 
-The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`1, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero. Descriptive statistics for all variables included in the model are displayed in Supplementary Material 1.
+The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`1, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero. Descriptive statistics for all variables included in the model are displayed in Supplementary Taterial 1.
 
-The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects. The CrI for the total effect of the amount of half days of daycare on vocabulary percentiles included zero, as did all direct and indirect effects. Similarly, the CrI for the total effect of the number of older siblings on vocabulary percentiles included zero, as did all direct and indirect effects. These results suggest that neither the number of half days the child attends daycare, nor the number of older siblings had a reliable effect on vocabulary percentiles in this sample.
+The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects.
+The CrI for the total effect of the amount of half days of daycare on vocabulary percentiles included zero, as did all direct and indirect effects.
+Similarly, the CrI for the total effect of the number of older siblings on vocabulary percentiles included zero, as did all direct and indirect effects.
+These results suggest that neither the number of half days the child attends daycare, nor the number of older siblings had a reliable effect on vocabulary percentiles in this sample.
 
 ```{r}
 #| label: tbl-overall-effects
@@ -395,7 +542,11 @@ To further understand the model, we examined its individual steps, considering t
 
 ### First-level mediators
 
-Predictors of the first-level mediators are shown in @tbl-first-level-med. Both the parental motivations of behavioral management and freeing up parents had parental education effects; these effects are visualised in @fig-first-level-ses, suggesting that parents with the lowest education levels experienced greater motivations for freeing up time, along with a more complex nonlinear effect for behavioral management. There was also an effect of child gender, such that parents of girls were more likely to employ child screen use to free themselves up. The learning motivation had a reliable effect of age, such that children who were one year older also had parents who were more motivated to use screens for learning. All other predictors of the first-level mediators had CrIs that included zero, suggesting no reliable effects.
+Predictors of the first-level mediators are shown in @tbl-first-level-med.
+Both the parental motivations of behavioral management and freeing up parents had parental education effects; these effects are visualised in @fig-first-level-ses, suggesting that parents with the lowest education levels experienced greater motivations for freeing up time, along with a more complex nonlinear effect for behavioral management.
+There was also an effect of child gender, such that parents of girls were more likely to employ child screen use to free themselves up.
+The learning motivation had a reliable effect of age, such that children who were one year older also had parents who were more motivated to use screens for learning.
+All other predictors of the first-level mediators had CrIs that included zero, suggesting no reliable effects.
 
 ```{r}
 #| label: tbl-first-level-med
@@ -418,7 +569,7 @@ first_level_med <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_half days = "Number of half days of daycare",
+    childcare_halfdays = "Number of half days of daycare",
     num_older_siblings = "Nummber of older siblings"
   )),
   rhs = ifelse(rhs == "", "Intercept", rhs)) |> 
@@ -473,7 +624,10 @@ ggplot(first_ses_est, aes(x = ses, y = mean, color = var)) +
 
 ### Second-level mediators
 
-Predictors of the second-level mediators are shown in @tbl-second-level-med. For expanding parental interaction during co-viewing, the effect of age was reliable and positive, such that parents of older children were more likely to expand on the content on the screen. For the focusing interaction, the reliable effects were of gender and learning motivation, such that parents of boys and parents who were more motivated by their child’s learning were more likely to focus the child’s attention on the content during co-viewing. For the asking interaction, the effect of age was reliable and positive, such that parents of older children were more likely to ask about content on the screen.
+Predictors of the second-level mediators are shown in @tbl-second-level-med.
+For expanding parental interaction during co-viewing, the effect of age was reliable and positive, such that parents of older children were more likely to expand on the content on the screen.
+For the focusing interaction, the reliable effects were of gender and learning motivation, such that parents of boys and parents who were more motivated by their child’s learning were more likely to focus the child’s attention on the content during co-viewing.
+For the asking interaction, the effect of age was reliable and positive, such that parents of older children were more likely to ask about content on the screen.
 
 ```{r}
 #| label: tbl-second-level-med
@@ -498,7 +652,7 @@ second_level_med <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_half days = "Number of half days of daycare",
+    childcare_halfdays = "Number of half days of daycare",
     num_older_siblings = "Nummber of older siblings",
     motivation_behmgmt = "Motivation: Behavioral mangement",
     motivation_freeing = "Motivation: Freeing parent",
@@ -523,11 +677,14 @@ second_level_med <- mod_pars |>
 second_level_med
 ```
 
-For the indication of whether children co-viewed screens, there was a reliable positive effect of age. Finally, in terms of weekly screen time, there were reliable positive effects of age and the motivations of behavioral management, learning, and emotion regulation, as well as a reliable negative effect of amount of childcare.
+For the indication of whether children co-viewed screens, there was a reliable positive effect of age.
+Finally, in terms of weekly screen time, there were reliable positive effects of age and the motivations of behavioral management, learning, and emotion regulation, as well as a reliable negative effect of amount of childcare.
 
 ### Vocabulary
 
-Predictors of the vocabulary percentiles are shown in @tbl-outcome. The only reliable effect was that of age, which was negative. Note that we removed some variance due to age in the process of obtaining age percentiles; however, as this study sampled from a multilingual population, there may have been some residual variance due to age that was not accounted for in the monolingual CDI percentiles.
+Predictors of the vocabulary percentiles are shown in @tbl-outcome.
+The only reliable effect was that of age, which was negative.
+Note that we removed some variance due to age in the process of obtaining age percentiles; however, as this study sampled from a multilingual population, there may have been some residual variance due to age that was not accounted for in the monolingual CDI percentiles.
 
 ```{r}
 #| label: tbl-outcome
@@ -550,7 +707,7 @@ outcome <- mod_pars |>
     ses.C = "Parental education: Cubic",
     ses.4 = "Parental education: Quartic",
     ses.5 = "Parental education: Quintic",
-    childcare_half days = "Intercept/Main effect_Childcare",
+    childcare_halfdays = "Intercept/Main effect_Childcare",
     num_older_siblings = "Intercept/Main effect_Num older siblings",
     motivation_behmgmt = "Motivation: Behavioral management",
     motivation_freeing = "Motivation: Freeing parent",
@@ -609,47 +766,102 @@ outcome
 
 # Discussion
 
-The present study represents one of the first empirical applications of the DREAMER framework to understand how family media ecology is linked to early language development. The hypothesized serial mediation model revealed several direct pathways between individual and structural factors, parental motivations, and characteristics of child screen use, but no associations with vocabulary skills of young children.
+The present study represents one of the first empirical applications of the DREAMER framework to understand how family media ecology is linked to early language development.
+The hypothesized serial mediation model revealed several direct pathways between individual and structural factors, parental motivations, and characteristics of child screen use, but no associations with vocabulary skills of young children.
 
 ## The importance of child individual and structural factors
 
-Regarding the relationship between individual and structural factors and parental motivations for child screen use, we found that parental education significantly shaped certain motivations: parents with lower educational attainment were more likely to endorse screen use to free up their own time. This pattern of primarily instrumental screen use, oriented toward meeting immediate parental needs, aligns with the DREAMER framework’s conceptualization of structural influences within the family media ecology [@barrEarlyChildhoodDigital2024]. One possible explanation is that economic pressures driven by lower education attainment may increase parental stress and reduce available alternatives to screen-based child engagement [@maattaMediatingRoleHome2017; @wiltshireAssociationsAverageParental2021], leading to more utilitarian motivations for media use. Importantly, these motivations were not inherently problematic, as they did not translate into negative vocabulary outcomes in our sample.
+Regarding the relationship between individual and structural factors and parental motivations for child screen use, we found that parental education significantly shaped certain motivations: parents with lower educational attainment were more likely to endorse screen use to free up their own time.
+This pattern of primarily instrumental screen use, oriented toward meeting immediate parental needs, aligns with the DREAMER framework’s conceptualization of structural influences within the family media ecology [@barrEarlyChildhoodDigital2024].
+One possible explanation is that economic pressures driven by lower education attainment may increase parental stress and reduce available alternatives to screen-based child engagement [@maattaMediatingRoleHome2017; @wiltshireAssociationsAverageParental2021], leading to more utilitarian motivations for media use.
+Importantly, these motivations were not inherently problematic, as they did not translate into negative vocabulary outcomes in our sample.
 
-Interestingly, parental education did not show reliable effects on learning motivations. Instead, learning motivation was primarily predicted by child age, with parents of older children being more motivated to use screens for educational purposes. The age-related increase in learning motivations demonstrates the developmental sensitivity embedded within the DREAMER framework. As children mature, parents increasingly view digital media as educational tools, which aligns with the framework's recognition that media effects must be understood within specific developmental windows [@eichenFamiliesDigitalMedia2021].
+Interestingly, parental education did not show reliable effects on learning motivations.
+Instead, learning motivation was primarily predicted by child age, with parents of older children being more motivated to use screens for educational purposes.
+The age-related increase in learning motivations demonstrates the developmental sensitivity embedded within the DREAMER framework.
+As children mature, parents increasingly view digital media as educational tools, which aligns with the framework's recognition that media effects must be understood within specific developmental windows [@eichenFamiliesDigitalMedia2021].
 
-Individual and structural factors also shaped child screen use characteristics. Unsurprisingly, older children showed higher screen time, thus replicating a highly consistent finding from the literature (Mann et al., 2025 [@schmidDigitalMediaUse2025]. Another reliable predictor of screen time was daycare attendance, with higher attendance related to lower screen time. This finding likely reflects that daycare settings offer structured routines, active engagement, and often follow guidelines that limit media use [@vanderlooScreenviewingPreschoolersChildcare2014]. In contrast to home environments where screens may be used to manage children's behavior, daycare provides alternative forms of stimulation and social interaction, acting as a protective factor against excessive screen exposure (Steiner et al., 2023).
+Individual and structural factors also shaped child screen use characteristics.
+Unsurprisingly, older children showed higher screen time, thus replicating a highly consistent finding from the literature [@mannCommonSenseCensus2025; @schmidDigitalMediaUse2025].
+Another reliable predictor of screen time was daycare attendance, with higher attendance related to lower screen time.
+This finding likely reflects that daycare settings offer structured routines, active engagement, and often follow guidelines that limit media use [@vanderlooScreenviewingPreschoolersChildcare2014].
+In contrast to home environments where screens may be used to manage children's behavior, daycare provides alternative forms of stimulation and social interaction, acting as a protective factor against excessive screen exposure [@steinerDigitaleMedienKindertagesstaetten2023].
 
-However, neither the number of older siblings, nor parental education showed a reliable link to child screen time. While this is a somewhat consistent finding in the literature (Mann et al., 2025; [@toothAdherenceScreenTime2022], its absence might be explained by the limited variability in our sample: only 10% of children had older siblings, and 70% of parents held a college degree or higher. To more accurately assess these effects, future studies should include more demographically diverse populations.
+However, neither the number of older siblings, nor parental education showed a reliable link to child screen time.
+While this is a somewhat consistent finding in the literature [@mannCommonSenseCensus2025; @toothAdherenceScreenTime2022], its absence might be explained by the limited variability in our sample: only 10% of children had older siblings, and 70% of parents held a college degree or higher.
+To more accurately assess these effects, future studies should include more demographically diverse populations.
 
-Individual factors were also found to play a role in shaping both parent-child screen co-viewing and the parental interaction practices during co-viewing. Child age emerged as a particularly important predictor, with reliable positive effects on expanding interactions, asking interactions, and co-viewing likelihood. This finding aligns with developmental expectations, as older toddlers possess greater linguistic and cognitive capacity for such exchanges [@hirsh-pasekPuttingEducationEducational2015]. The gender effect on focusing interactions—with parents of boys more likely to direct attention to screen content—may reflect different interaction styles or perceived attention needs, though this finding warrants further investigation. Interestingly, structural factors—particularly parental education—were not associated with co-viewing during children's screen use.
+Individual factors were also found to play a role in shaping both parent-child screen co-viewing and the parental interaction practices during co-viewing.
+Child age emerged as a particularly important predictor, with reliable positive effects on expanding interactions, asking interactions, and co-viewing likelihood.
+This finding aligns with developmental expectations, as older toddlers possess greater linguistic and cognitive capacity for such exchanges [@hirsh-pasekPuttingEducationEducational2015].
+The gender effect on focusing interactions—with parents of boys more likely to direct attention to screen content—may reflect different interaction styles or perceived attention needs, though this finding warrants further investigation.
+Interestingly, structural factors—particularly parental education—were not associated with co-viewing during children's screen use.
 
 ## The association of parental motivations and characteristics of child screen use
 
-Learning motivation reliably predicted increased parental interactions during co-viewing that aimed to focus the child’s attention. In other words, parental motivation appears to shape parent–child co-viewing: parents with educational motivations for child screen use tend to focus their child’s attention on the screen content—by actively pointing, naming, and commenting. Thus, parents with learning motivation for screen use are not mere bystanders; rather, they provide rich interactive opportunities, which foster their child’s learning [@doreCharacteristicsChildrensMedia2020; @lavigneInfluenceTelevisionCoviewing2015]. This interpretation is supported by studies with older children (ages 4–8), showing that parents who value the educational potential of media are more likely to engage in co-viewing [@griffithParentBeliefsChild2023], suggesting that such motives consistently foster more interactive and developmentally beneficial screen use across childhood.
+Learning motivation reliably predicted increased parental interactions during co-viewing that aimed to focus the child’s attention.
+In other words, parental motivation appears to shape parent–child co-viewing: parents with educational motivations for child screen use tend to focus their child’s attention on the screen content—by actively pointing, naming, and commenting.
+Thus, parents with learning motivation for screen use are not mere bystanders; rather, they provide rich interactive opportunities, which foster their child’s learning [@doreCharacteristicsChildrensMedia2020; @lavigneInfluenceTelevisionCoviewing2015].
+This interpretation is supported by studies with older children (ages 4–8), showing that parents who value the educational potential of media are more likely to engage in co-viewing [@griffithParentBeliefsChild2023], suggesting that such motives consistently foster more interactive and developmentally beneficial screen use across childhood.
 
-Parental motivations for child screen use appear to influence child screen time as well. Specifically, behavioral management-oriented, learning-oriented and emotion regulation-oriented motivations were associated with higher weekly screen time. This suggests that when parents perceive screen media as beneficial for their child’s learning or as a useful tool to manage behaviors and emotions like boredom, distress, or overstimulation, they might be more likely to permit frequent or prolonged screen use [@hinkleyWhatMumsThink2017]. Crucially, increased screen exposure in the context of learning motivation may not reflect passive or indiscriminate use, but rather a deliberate effort to integrate screen media into educational routines or parent–child interactions. In such cases, higher screen time could indicate greater access to enriching content or more frequent joint engagement, rather than overuse. Similarly, screen use motivated by emotion regulation may reflect adaptive parental strategies to navigate daily stressors or challenging moments in caregiving, using screens as a behavioral support tool [@brauchliAreScreenMedia2024].
+Parental motivations for child screen use appear to influence child screen time as well.
+Specifically, behavioral management-oriented, learning-oriented and emotion regulation-oriented motivations were associated with higher weekly screen time.
+This suggests that when parents perceive screen media as beneficial for their child’s learning or as a useful tool to manage behaviors and emotions like boredom, distress, or overstimulation, they might be more likely to permit frequent or prolonged screen use [@hinkleyWhatMumsThink2017].
+Crucially, increased screen exposure in the context of learning motivation may not reflect passive or indiscriminate use, but rather a deliberate effort to integrate screen media into educational routines or parent–child interactions.
+In such cases, higher screen time could indicate greater access to enriching content or more frequent joint engagement, rather than overuse.
+Similarly, screen use motivated by emotion regulation may reflect adaptive parental strategies to navigate daily stressors or challenging moments in caregiving, using screens as a behavioral support tool [@brauchliAreScreenMedia2024].
 
 ## Absence of associations with child vocabulary
 
-The conceptual model suggested in this study did not reveal any significant associations between child individual and contextual factors, parental motivations and child screen characteristics with vocabulary skills. While it was expected that screentime would not directly relate to vocabulary, based on the existing evidence, we expected either direct or indirect pathways between parent-child co-viewing as well as parental co-viewing practices and child language abilities [@alroqiAssociationScreenMedia2023; @lavigneInfluenceTelevisionCoviewing2015; @strouseEffectiveCoviewingPreschoolers2013].
+The conceptual model suggested in this study did not reveal any significant associations between child individual and contextual factors, parental motivations and child screen characteristics with vocabulary skills.
+While it was expected that screen time would not directly relate to vocabulary, based on the existing evidence, we expected either direct or indirect pathways between parent-child co-viewing as well as parental co-viewing practices and child language abilities [@alroqiAssociationScreenMedia2023; @lavigneInfluenceTelevisionCoviewing2015; @strouseEffectiveCoviewingPreschoolers2013].
 
-The null finding, however, may be theoretically significant when interpreted through the DREAMER framework lens [@barrEarlyChildhoodDigital2024]. First, the DREAMER framework emphasizes that media effects occur across multiple timescales and through cumulative processes. Our cross-sectional design may not have captured the longer-term developmental trajectories that the framework suggests are critical for understanding media effects. The immediate and short-term responses to media that the framework identifies as crucial mediators were not measured in our study. Second, the framework's ecological perspective suggests that media effects are highly context-dependent and may be buffered or amplified by other family factors not fully captured in our model. The quality of parent-child interactions outside of screen time, the broader linguistic environment, and other unmeasured family resources may have protected against negative effects or enhanced positive ones. Third, our sample characteristics may have created conditions under which negative media effects were less likely to emerge. The majority of families were well-educated and economically stable, potentially providing rich compensatory environments that could offset any negative impacts of screen exposure. This interpretation aligns with the DREAMER framework's recognition of structural factors as moderators of media effects.
+The null finding, however, may be theoretically significant when interpreted through the DREAMER framework lens [@barrEarlyChildhoodDigital2024].
+First, the DREAMER framework emphasizes that media effects occur across multiple timescales and through cumulative processes.
+Our cross-sectional design may not have captured the longer-term developmental trajectories that the framework suggests are critical for understanding media effects.
+The immediate and short-term responses to media that the framework identifies as crucial mediators were not measured in our study.
+Second, the framework's ecological perspective suggests that media effects are highly context-dependent and may be buffered or amplified by other family factors not fully captured in our model.
+The quality of parent-child interactions outside of screen time, the broader linguistic environment, and other unmeasured family resources may have protected against negative effects or enhanced positive ones.
+Third, our sample characteristics may have created conditions under which negative media effects were less likely to emerge.
+The majority of families were well-educated and economically stable, potentially providing rich compensatory environments that could offset any negative impacts of screen exposure.
+This interpretation aligns with the DREAMER framework's recognition of structural factors as moderators of media effects.
 
 ## Limitations and future directions
 
-Several limitations of our study warrant consideration. First, the cross-sectional design restricts our ability to draw causal inferences or examine the temporal dynamics central to the DREAMER framework, despite the causal mediation data analysis framework [@imaiGeneralApproachCausal2010]. Longitudinal research is needed to clarify the directionality of associations and to better capture developmental trajectories over time. Second, our reliance on parent-report measures may have introduced bias, particularly due to socially desirable responding regarding screen use practices [@christakisEffectsInfantMedia2009]. Incorporating observational methods or multi-informant reports could enhance the validity of future findings. Third, while our study focused on vocabulary as a developmental outcome, this narrow scope may have overlooked other domains—such as socio-emotional or executive functioning—where screen use effects might be more pronounced. Future research should adopt a broader developmental lens. Additionally, although the DREAMER framework emphasizes the importance of understanding media effects within the broader family system, our study focused primarily on parent-child dyads. This limited perspective excludes the potential influence of siblings, grandparents, and other caregivers. Expanding the scope to include these relational dynamics would provide a more comprehensive understanding of media’s role in family life. Another key limitation was the absence of clear content quality measures: we lacked detailed information about specific programs or apps, which research suggests may be crucial for understanding developmental impacts [@celenyoldasCommunicativeEnvironmentalFactors2021; @jingScreenMediaExposure2023]. Future studies should incorporate more granular content analysis alongside usage patterns. Finally, although our sample was skewed towards higher parental education and was limited to Swiss families. This may constrain the generalizability of our findings to other socio-economic and cultural contexts with differing media use norms and family structures.
+Several limitations of our study warrant consideration.
+First, the cross-sectional design restricts our ability to draw causal inferences or examine the temporal dynamics central to the DREAMER framework, despite the causal mediation data analysis framework [@imaiGeneralApproachCausal2010].
+Longitudinal research is needed to clarify the directionality of associations and to better capture developmental trajectories over time.
+Second, our reliance on parent-report measures may have introduced bias, particularly due to socially desirable responses regarding screen use practices [@christakisEffectsInfantMedia2009].
+Incorporating observational methods or multi-informant reports could enhance the validity of future findings.
+Third, while our study focused on vocabulary as a developmental outcome, this narrow scope may have overlooked other domains—such as socio-emotional or executive functioning—where screen use effects might be more pronounced.
+Future research should adopt a broader developmental lens.
+Additionally, although the DREAMER framework emphasizes the importance of understanding media effects within the broader family system, our study focused primarily on parent-child dyads.
+This limited perspective excludes the potential influence of siblings, grandparents, and other caregivers.
+Expanding the scope to include these relational dynamics would provide a more comprehensive understanding of media’s role in family life.
+Another key limitation was the absence of clear content quality measures: we lacked detailed information about specific programs or apps, which research suggests may be crucial for understanding developmental impacts [@celenyoldasCommunicativeEnvironmentalFactors2021; @jingScreenMediaExposure2023].
+Future studies should incorporate more granular content analysis alongside usage patterns.
+Finally, although our sample was skewed towards higher parental education and was limited to families who live in Switzerland.
+This may constrain the generalizability of our findings to other socio-economic and cultural contexts with differing media use norms and family structures.
 
-These limitations also relate to the DREAMER framework [@barrEarlyChildhoodDigital2024]. Our study reveals both the promise and challenges of operationalizing the DREAMER framework empirically. The framework's comprehensive approach necessitates complex models that may require larger samples and longitudinal designs to detect the dynamic processes it describes. The absence of significant mediation effects in our study may reflect the need for different analytical approaches that can capture the non-linear, time-varying relationships the framework proposes.
+These limitations also relate to the DREAMER framework [@barrEarlyChildhoodDigital2024].
+Our study reveals both the promise and challenges of operationalizing the DREAMER framework empirically.
+The framework's comprehensive approach necessitates complex models that may require larger samples and longitudinal designs to detect the dynamic processes it describes.
+The absence of significant mediation effects in our study may reflect the need for different analytical approaches that can capture the non-linear, time-varying relationships the framework proposes.
 
 Future applications of the DREAMER framework could be strengthened by incorporating intensive longitudinal designs that capture the momentary and short-term response processes emphasized by the model; adopting multi-informant approaches that include perspectives from all family members within the media ecology; utilizing observational measures to complement parent-report data with objective assessments of media use quality and parent-child interactions; and expanding outcome measures to encompass the full range of developmental domains the framework suggests are influenced by media exposure.
 
 # Conclusion
 
-This study provides a nuanced examination of how child individual and structural factors, parental motivations, and characteristics of child screen use relate to early vocabulary abilities. While we found no evidence for reliable links between family media ecology (as operationalized in our model) and vocabulary scores, the results highlight the complexity of digital screen effects in early childhood and the importance of considering broader family ecology [@barrMediaExposureInfancy2017; @christakisHowEarlyMedia2018]. The absence of vocabulary outcomes should not be interpreted as evidence that screen use is irrelevant to development, but rather as a reminder that developmental outcomes emerge from multiple interacting factors [@madiganAssociationScreenTime2019]. The DREAMER framework [@barrEarlyChildhoodDigital2024] provides a valuable lens for understanding these complexities, even when specific predictions are not supported.
+This study provides a nuanced examination of how child individual and structural factors, parental motivations, and characteristics of child screen use relate to early vocabulary abilities.
+While we found no evidence for reliable links between family media ecology (as operationalized in our model) and vocabulary scores, the results highlight the complexity of digital screen effects in early childhood and the importance of considering broader family ecology [@barrMediaExposureInfancy2017; @christakisHowEarlyMedia2018].
+The absence of vocabulary outcomes should not be interpreted as evidence that screen use is irrelevant to development, but rather as a reminder that developmental outcomes emerge from multiple interacting factors [@madiganAssociationScreenTime2019].
+The DREAMER framework [@barrEarlyChildhoodDigital2024] provides a valuable lens for understanding these complexities, even when specific predictions are not supported.
 
-Our findings highlight the importance of further research that goes beyond basic measures of screen time to explore the various ways in which digital media interact with family life and child development [@sundqvistLongitudinalStudyRelationship2024]. As technology continues to evolve and become more integrated into family routines, understanding these relationships will become increasingly important for supporting optimal developmental outcomes.
+Our findings highlight the importance of further research that goes beyond basic measures of screen time to explore the various ways in which digital media interact with family life and child development [@sundqvistLongitudinalStudyRelationship2024].
+As technology continues to evolve and become more integrated into family routines, understanding these relationships will become increasingly important for supporting optimal developmental outcomes.
 
-The practical implications of this work suggest that families and practitioners should focus on the quality and context of screen experiences rather than duration alone, while recognizing that effective media practices must be compatible with families' structural realities and everyday need (Kostyrka-Allchorne et al., 2023). Future research and intervention efforts should embrace this complexity rather than seeking overly simplified solutions to the challenges of growing up in a digital world.
+The practical implications of this work suggest that families and practitioners should focus on the quality and context of screen experiences rather than duration alone, while recognizing that effective media practices must be compatible with families' structural realities and everyday needs.
+Future research and intervention efforts should embrace this complexity rather than seeking overly simplified solutions to the challenges of growing up in a digital world.
 
 # References
 
