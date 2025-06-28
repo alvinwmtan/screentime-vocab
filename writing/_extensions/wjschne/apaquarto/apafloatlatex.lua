@@ -132,7 +132,7 @@ local processfloat = function(float)
       -- Adjust space after caption in manuscript mode
       local aftercaption = ""
       if manuscriptmode then
-        aftercaption = "\n\\vspace{-20pt}"
+        aftercaption = "" -- "\n\\vspace{-20pt}"
         if float.attributes["after-caption-space"] then
           aftercaption = "\\vspace{" .. float.attributes["after-caption-space"] .. "}\n"
         end

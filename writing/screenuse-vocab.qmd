@@ -112,7 +112,7 @@ author-note:
     related-report: null
     conflict-of-interest: null
     financial-support: null
-    gratitude: "We thank all the parents who completed the SWIPE survey and all institutions that supported distribution of the survey link. This study was financially supported by: Federal Social Insurance Office (BSV), Foundation Action Innocence, Fondation Sana, Haute école de travail social et de la santé Lausanne, HES-SO (HETSL), and Pädagogische Hochschule Thurgau (PHTG). EU was financially supported by the research Fund Junior Researchers of the University of Basel, Grant/Award Number: 3MS1064. None of the funding sources had a role in the study design, analysis of data, interpretation of results, or writing of the report. The authors declare no conflict of interest in the conduct and reporting of research. Generative Artificial Intelligence was employed to assist with the rephrasing and summarization of written text, with the full approval of all authors."
+    gratitude: "We thank all the parents who completed the SWIPE survey and all institutions that supported distribution of the survey link. This study was financially supported by: Federal Social Insurance Office (BSV), Foundation Action Innocence, Fondation Sana, Haute école de travail social et de la santé Lausanne, HES-SO (HETSL), and Pädagogische Hochschule Thurgau (PHTG). EU was financially supported by the research Fund Junior Researchers of the University of Basel, Grant/Award Number: 3MS1064. None of the funding sources had a role in the study design, analysis of data, interpretation of results, or writing of the report. The authors declare no conflict of interest in the conduct and reporting of research. Generative Artificial Intelligence was employed to assist with the rephrasing and summarization of written text, with the full approval of all authors."
     authorship-agreements: "Fabio Sticca and Eva Unternaehrer share last authorship."
 abstract: "This study applies the Dynamic, Relational, Ecological Approach to Media Effects Research (DREAMER) framework to investigate how family media ecology associates with early vocabulary development. Drawing on a sample of 279 Swiss families with children aged 8–30 months, we examined how individual (child age, gender), structural (parental education, daycare attendance, siblings), and contextual (parental motivations, co-viewing behaviors) factors shape screen use dynamics and language outcomes. Using a Bayesian structural equation modeling approach, we tested a serial mediation model linking these variables to vocabulary percentiles derived from the MacArthur-Bates Communicative Development Inventory. While structural factors such as daycare attendance and sibling presence did not predict vocabulary outcomes, parental motivations—particularly for learning and behavioral management—were associated with screen use patterns and co-viewing behaviors. However, these contextual factors did not reliably predict vocabulary scores. Our findings highlight the complexity of media effects in early childhood and underscore the importance of considering developmental timing, family context, and parental intent. The results support the DREAMER framework’s emphasis on dynamic, bidirectional processes and call for longitudinal, multi-informant research to better capture the nuanced pathways linking digital media use to developmental outcomes."
 keywords: [early language development, digital media use, parental motivations, family media ecology, DREAMER framework]
@@ -123,6 +123,13 @@ format:
   apaquarto-typst: default
   apaquarto-pdf:
     documentmode: man
+    floatsintext: true
+    keep-tex: true
+include-in-header: 
+  - text: "\\renewcommand{\\textfraction}{0.0}"
+  - text: "\\renewcommand{\\topfraction}{1}"
+  - text: "\\renewcommand{\\bottomfraction}{1}"
+  - text: "\\renewcommand{\\floatpagefraction}{1}"
 ---
 
 ```{r echo=F}
@@ -193,7 +200,7 @@ Structural factors create both direct and indirect pathways to screen-language r
 Lower-income families report higher levels of screen exposure [@anandDemographicPredictorsMedia2005; @calvertAgeEthnicitySocioeconomic2005], while income also moderates developmental outcomes [@linverFamilyProcessesPathways2002; @schwabLanguageLearningSocioeconomic2016].
 Children from lower socioeconomic backgrounds are more likely to experience screen use without enriching caregiver interaction, which can substantially undermine language development [@balExaminingRelationshipLanguage2024].
 Similarly, parental education level significantly influences both screen exposure patterns and mediation strategies.
-For instance, parents with lower educational attainment tend to permit more passive screen use [@mannCommonSenseCensus2025] Paulus et al., 2023), whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
+For instance, parents with lower educational attainment tend to permit more passive screen use [@mannCommonSenseCensus2025], whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
 
 ## Parental motivations: The hidden driver of language outcomes
 
@@ -275,6 +282,7 @@ For more detailed information on the study see Schmid and colleagues (citation).
 ```{r}
 #| label: tbl-demographics
 #| tbl-cap: Sociodemographic information; values are expressed as percentages within the geographical location subsample, unless otherwise specified.
+#| disable-apaquarto-processing: true
 
 read_csv(here("data", "demogs.csv"), show_col_types = FALSE) |> 
   fill(Group, .direction = "down") |>
@@ -319,7 +327,9 @@ read_csv(here("data", "demogs.csv"), show_col_types = FALSE) |>
   tab_footnote(
     footnote = "For employment category examples, see the full survey on OSF (https://osf.io/kd3b7).",
     locations = cells_row_groups(groups = "**Parent employment category**")
-  )
+  ) |> 
+  tab_options(table.font.size = 11,
+              latex.use_longtable = TRUE)
 ```
 
 Among all families, 90% lived in two-parent households, 2.5% in single-parent households, and 12.9% in other arrangements (unknown: 0.4%).
@@ -510,7 +520,7 @@ mod_pars <- get_model_parameters(mod_sem_fix) |>
   left_join(mod_est, by = join_by(label == var))
 ```
 
-The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`1, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero. Descriptive statistics for all variables included in the model are displayed in Supplementary Taterial 1.
+The causal mediation SEM converged with all $\hat{R} <$ `r mod_sem_fix |> blavInspect("rhat") |> max() |> (\(x) ceiling(x * 100) / 100)()`1, and effective sample sizes above 1000. For all estimates, we report the posterior mean and 95% highest density credible intervals (CrIs); reliability was determined by whether the CrI included zero. Descriptive statistics for all variables included in the model are displayed in @tbl-supp.
 
 The overall effects of the structural factors on vocabulary percentiles are shown in @tbl-overall-effects.
 The CrI for the total effect of the amount of half days of daycare on vocabulary percentiles included zero, as did all direct and indirect effects.
@@ -581,8 +591,8 @@ first_level_med <- mod_pars |>
   fmt_markdown(everything()) |> 
   cols_align(align = "center", columns = -Predictor) |> 
   cols_width(
-    Predictor ~ px(115),
-    everything() ~ px(122)
+    Predictor ~ px(160),
+    everything() ~ px(110)
   ) |> 
   tab_options(table.font.size = 11)
 
@@ -592,6 +602,8 @@ first_level_med
 ```{r}
 #| label: fig-first-level-ses
 #| fig-cap: Estimated effects of parental education on first-level mediators, showing posterior means and 95% highest density credible intervals. All estimates are on the original scale of the mediator.
+#| fig-width: 6.5
+#| fig-height: 4.5
 
 first_ses_est <- ses_draws(
   params = c("motivation_behmgmt", "motivation_freeing", 
@@ -756,8 +768,8 @@ outcome <- mod_pars |>
   sub_missing(everything()) |> 
   cols_align(align = "center", columns = -Predictor) |> 
   cols_width(
-    Predictor ~ px(200),
-    everything() ~ px(90)
+    Predictor ~ px(160),
+    everything() ~ px(110)
   ) |> 
   tab_options(table.font.size = 11)
 
@@ -869,3 +881,32 @@ Future research and intervention efforts should embrace this complexity rather t
 
 ::: {#refs}
 :::
+
+# Appendix
+
+Descriptive statistics for all predictors included in the model are shown in @tbl-supp.
+
+```{r}
+#| label: tbl-supp
+#| tbl-cap: Descriptive statistics of model predictors; values are expressed as percentages or means and SDs.
+#| disable-apaquarto-processing: true
+
+read_csv(here("data", "supp.csv"), show_col_types = FALSE) |> 
+  fill(Group, .direction = "down") |>
+  mutate(Group = replace_na(Group, ""),
+         Variable = replace_na(Variable, "")) |> 
+  gt(rowname_col = "Variable",
+     groupname_col = "Group") |> 
+  tab_stubhead(label = "Variable") |> 
+  fmt_markdown() |> 
+  text_transform(
+    locations = cells_row_groups(),
+    fn = function(x) {
+      map(x, md)
+    }
+  ) |> 
+  tab_options(table.font.size = 11,
+              latex.use_longtable = TRUE)
+```
+
+
