@@ -108,7 +108,7 @@ author-note:
     deceased: null
   disclosures:
     study-registration: null
-    data-sharing: The dataset is available upon request addressed to the corresponding author.
+    data-sharing: "The dataset is available upon request addressed to the corresponding author. Code is available on GitHub at \\url{https://github.com/alvinwmtan/screenuse-vocab}."
     related-report: null
     conflict-of-interest: null
     financial-support: null
