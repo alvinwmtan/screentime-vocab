@@ -200,7 +200,7 @@ Structural factors create both direct and indirect pathways to screen-language r
 Lower-income families report higher levels of screen exposure [@anandDemographicPredictorsMedia2005; @calvertAgeEthnicitySocioeconomic2005], while income also moderates developmental outcomes [@linverFamilyProcessesPathways2002; @schwabLanguageLearningSocioeconomic2016].
 Children from lower socioeconomic backgrounds are more likely to experience screen use without enriching caregiver interaction, which can substantially undermine language development [@balExaminingRelationshipLanguage2024].
 Similarly, parental education level significantly influences both screen exposure patterns and mediation strategies.
-For instance, parents with lower educational attainment tend to permit more passive screen use [@mannCommonSenseCensus2025], whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
+For instance, parents with lower educational attainment tend to permit more passive screen use [@mannCommonSenseCensus2025; @paulusFamilialContextInfluences2024], whereas higher-educated parents are more likely to engage in co-viewing and support language development through interactive media practices [@ponsMaternalEducationLevel2020].
 
 ## Parental motivations: The hidden driver of language outcomes
 
